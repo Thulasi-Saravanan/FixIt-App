@@ -1,0 +1,1585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FixIt - Intelligent Troubleshooting Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-blue: #005eb5;
+            --primary-dark: #003d7a;
+            --accent-green: #10c876;
+            --accent-orange: #ff8c42;
+            --accent-red: #e74c3c;
+            --bg-light: #f8f9fa;
+            --bg-lighter: #f3f4f5;
+            --text-dark: #1a1a1a;
+            --text-gray: #666666;
+            --text-light: #999999;
+            --border-color: #e0e0e0;
+            --border-light: #f0f0f0;
+            --white: #ffffff;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        /* ============================================
+           HEADER & NAVIGATION
+           ============================================ */
+        .header {
+            background: var(--white);
+            border-bottom: 1px solid var(--border-color);
+            padding: 20px 0;
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--primary-blue);
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-text {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--primary-blue);
+            color: var(--white);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-text {
+            font-size: 14px;
+            color: var(--text-gray);
+            font-weight: 500;
+        }
+
+        /* ============================================
+           MAIN CONTAINER
+           ============================================ */
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+            min-height: calc(100vh - 200px);
+        }
+
+        /* ============================================
+           PROGRESS INDICATOR
+           ============================================ */
+        .progress-section {
+            margin-bottom: 40px;
+            animation: slideDown 0.3s ease;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .progress-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .progress-step {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--primary-blue);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: var(--border-light);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-blue) 0%, var(--accent-green) 100%);
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+
+        /* ============================================
+           SCREEN 1: DIAGNOSIS FLOW
+           ============================================ */
+        .screen {
+            background: var(--white);
+            border-radius: 16px;
+            box-shadow: var(--shadow-md);
+            padding: 40px;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .screen.hidden {
+            display: none;
+        }
+
+        .screen-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .screen-subtitle {
+            font-size: 16px;
+            color: var(--text-gray);
+            margin-bottom: 32px;
+            font-weight: 500;
+        }
+
+        /* Question Screen */
+        .question-card {
+            background: linear-gradient(135deg, rgba(0, 94, 181, 0.04) 0%, rgba(16, 200, 118, 0.04) 100%);
+            border: 2px solid var(--border-light);
+            border-radius: 12px;
+            padding: 28px;
+            margin-bottom: 32px;
+            transition: all 0.3s ease;
+        }
+
+        .question-card:hover {
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 4px rgba(0, 94, 181, 0.08);
+        }
+
+        .question-text {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 12px;
+        }
+
+        .question-description {
+            font-size: 14px;
+            color: var(--text-gray);
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .why-link {
+            font-size: 13px;
+            color: var(--primary-blue);
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s;
+        }
+
+        .why-link:hover {
+            gap: 10px;
+        }
+
+        .why-link::after {
+            content: '→';
+            transition: transform 0.3s;
+        }
+
+        /* Answer Options */
+        .answers-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .answer-btn {
+            padding: 20px;
+            border: 2px solid var(--border-color);
+            background: var(--white);
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-dark);
+            transition: all 0.3s ease;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+        }
+
+        .answer-btn:hover {
+            border-color: var(--primary-blue);
+            background: linear-gradient(135deg, rgba(0, 94, 181, 0.04) 0%, rgba(16, 200, 118, 0.04) 100%);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .answer-btn.selected {
+            border-color: var(--primary-blue);
+            background: linear-gradient(135deg, rgba(0, 94, 181, 0.1) 0%, rgba(16, 200, 118, 0.1) 100%);
+            color: var(--primary-blue);
+            box-shadow: 0 0 0 6px rgba(0, 94, 181, 0.08);
+        }
+
+        .answer-btn::after {
+            content: '→';
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0;
+            color: var(--primary-blue);
+            font-weight: bold;
+            transition: opacity 0.3s;
+        }
+
+        .answer-btn:hover::after,
+        .answer-btn.selected::after {
+            opacity: 1;
+        }
+
+        .answer-icon {
+            font-size: 24px;
+        }
+
+        .answer-label {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* ============================================
+           SCREEN 2: PROBLEM DESCRIPTION
+           ============================================ */
+        .form-section {
+            margin-bottom: 32px;
+        }
+
+        .form-section-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .form-description {
+            font-size: 14px;
+            color: var(--text-gray);
+            margin-bottom: 12px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 120px;
+            transition: all 0.3s;
+            color: var(--text-dark);
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 4px rgba(0, 94, 181, 0.08);
+        }
+
+        .textarea-optional {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-top: 6px;
+        }
+
+        /* Device Selection */
+        .device-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .device-card {
+            padding: 16px;
+            border: 2px solid var(--border-color);
+            background: var(--white);
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .device-card:hover {
+            border-color: var(--primary-blue);
+            background: linear-gradient(135deg, rgba(0, 94, 181, 0.04) 0%, rgba(16, 200, 118, 0.04) 100%);
+            transform: translateY(-2px);
+        }
+
+        .device-card.selected {
+            border-color: var(--primary-blue);
+            background: linear-gradient(135deg, rgba(0, 94, 181, 0.1) 0%, rgba(16, 200, 118, 0.1) 100%);
+            color: var(--primary-blue);
+            box-shadow: 0 0 0 6px rgba(0, 94, 181, 0.08);
+        }
+
+        .device-icon {
+            font-size: 32px;
+        }
+
+        .device-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .device-card.selected .device-name {
+            color: var(--primary-blue);
+        }
+
+        /* Select Dropdown */
+        select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            background: var(--white);
+            color: var(--text-dark);
+            cursor: pointer;
+            transition: all 0.3s;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23005eb5' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 36px;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 4px rgba(0, 94, 181, 0.08);
+        }
+
+        select:hover {
+            border-color: var(--primary-blue);
+        }
+
+        /* ============================================
+           SCREEN 3: DIAGNOSIS RESULTS
+           ============================================ */
+        .diagnosis-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .diagnosis-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--accent-green) 0%, #08a863 100%);
+            color: var(--white);
+            padding: 8px 16px;
+            border-radius: 24px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 12px rgba(16, 200, 118, 0.3);
+        }
+
+        .diagnosis-title {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 16px;
+            letter-spacing: -0.5px;
+        }
+
+        .diagnosis-explanation {
+            font-size: 16px;
+            color: var(--text-gray);
+            line-height: 1.7;
+            max-width: 600px;
+            margin: 0 auto 40px;
+        }
+
+        /* Causes Grid */
+        .causes-section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 20px;
+        }
+
+        .causes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .cause-card {
+            background: linear-gradient(135deg, var(--bg-light) 0%, var(--bg-lighter) 100%);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .cause-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-blue);
+        }
+
+        .cause-number {
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--primary-blue);
+            background: rgba(0, 94, 181, 0.1);
+            padding: 6px 12px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+        }
+
+        .cause-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .cause-description {
+            font-size: 14px;
+            color: var(--text-gray);
+            line-height: 1.6;
+        }
+
+        /* Next Steps Card */
+        .next-steps-card {
+            background: linear-gradient(135deg, rgba(0, 94, 181, 0.08) 0%, rgba(16, 200, 118, 0.08) 100%);
+            border: 2px solid var(--border-light);
+            border-left: 4px solid var(--primary-blue);
+            border-radius: 12px;
+            padding: 28px;
+            margin-bottom: 40px;
+        }
+
+        .next-steps-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .next-steps-title::before {
+            content: '📋';
+            font-size: 18px;
+        }
+
+        .next-steps-list {
+            list-style: none;
+        }
+
+        .next-steps-item {
+            font-size: 14px;
+            color: var(--text-gray);
+            line-height: 1.8;
+            padding-left: 28px;
+            position: relative;
+            margin-bottom: 12px;
+        }
+
+        .next-steps-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .next-steps-item::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--accent-green);
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        /* Confidence Section */
+        .confidence-section {
+            background: var(--bg-lighter);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 32px;
+        }
+
+        .confidence-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .confidence-label {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .confidence-bar {
+            flex: 1;
+            height: 8px;
+            background: var(--border-light);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-blue) 0%, var(--accent-green) 100%);
+            border-radius: 4px;
+            width: 85%;
+        }
+
+        .confidence-percent {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+
+        /* Expandable Section */
+        .expandable-section {
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            margin-bottom: 32px;
+            overflow: hidden;
+        }
+
+        .expandable-header {
+            padding: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-weight: 700;
+            color: var(--text-dark);
+            transition: background 0.3s;
+        }
+
+        .expandable-header:hover {
+            background: var(--bg-light);
+        }
+
+        .expandable-toggle {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-blue);
+            font-size: 14px;
+            font-weight: bold;
+            transition: transform 0.3s;
+        }
+
+        .expandable-section.expanded .expandable-toggle {
+            transform: rotate(180deg);
+        }
+
+        .expandable-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background: var(--bg-light);
+        }
+
+        .expandable-section.expanded .expandable-content {
+            max-height: 500px;
+        }
+
+        .expandable-text {
+            padding: 20px;
+            font-size: 14px;
+            color: var(--text-gray);
+            line-height: 1.7;
+        }
+
+        /* Feedback Section */
+        .feedback-section {
+            background: var(--bg-lighter);
+            border-radius: 12px;
+            padding: 28px;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .feedback-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 16px;
+        }
+
+        .feedback-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .feedback-btn {
+            padding: 10px 24px;
+            border: 2px solid var(--border-color);
+            background: var(--white);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+            transition: all 0.3s;
+        }
+
+        .feedback-btn:hover {
+            border-color: var(--primary-blue);
+            color: var(--primary-blue);
+        }
+
+        .feedback-btn.helpful {
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+        }
+
+        .feedback-btn.not-helpful {
+            border-color: var(--accent-orange);
+            color: var(--accent-orange);
+        }
+
+        /* ============================================
+           BUTTONS
+           ============================================ */
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 32px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, #0040a0 100%);
+            color: var(--white);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: var(--white);
+            color: var(--primary-blue);
+            border: 2px solid var(--primary-blue);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 94, 181, 0.08);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* ============================================
+           FOOTER
+           ============================================ */
+        .footer {
+            background: var(--white);
+            border-top: 1px solid var(--border-color);
+            padding: 40px 20px;
+            margin-top: 60px;
+        }
+
+        .footer-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            padding-bottom: 40px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .footer-col h3 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-dark);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .footer-col ul {
+            list-style: none;
+        }
+
+        .footer-col a {
+            font-size: 13px;
+            color: var(--text-gray);
+            text-decoration: none;
+            line-height: 1.8;
+            transition: color 0.3s;
+        }
+
+        .footer-col a:hover {
+            color: var(--primary-blue);
+        }
+
+        .footer-bottom {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding-top: 20px;
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        /* ============================================
+           RESPONSIVE DESIGN
+           ============================================ */
+        @media (max-width: 768px) {
+            .container {
+                margin: 30px auto;
+                padding: 0 16px;
+            }
+
+            .screen {
+                padding: 24px;
+                border-radius: 12px;
+            }
+
+            .screen-title {
+                font-size: 22px;
+                margin-bottom: 12px;
+            }
+
+            .answers-container {
+                grid-template-columns: 1fr;
+            }
+
+            .answer-btn {
+                padding: 16px;
+                flex-direction: row;
+                justify-content: center;
+                gap: 12px;
+            }
+
+            .answer-btn::after {
+                position: static;
+                opacity: 0;
+            }
+
+            .device-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .causes-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .diagnosis-title {
+                font-size: 28px;
+            }
+
+            .button-group {
+                flex-direction: column-reverse;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .footer-container {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+
+            .header-container {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+            }
+
+            .nav-right {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                background: var(--white);
+            }
+
+            .header {
+                padding: 16px 0;
+            }
+
+            .logo {
+                font-size: 20px;
+            }
+
+            .logo-icon {
+                width: 28px;
+                height: 28px;
+                font-size: 16px;
+            }
+
+            .screen {
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: var(--shadow-sm);
+            }
+
+            .screen-title {
+                font-size: 20px;
+            }
+
+            .question-card {
+                padding: 16px;
+            }
+
+            .device-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+
+            .device-card {
+                padding: 12px;
+            }
+
+            .device-icon {
+                font-size: 24px;
+            }
+
+            .device-name {
+                font-size: 12px;
+            }
+
+            .diagnosis-title {
+                font-size: 24px;
+            }
+
+            .causes-grid {
+                gap: 12px;
+            }
+
+            .cause-card {
+                padding: 16px;
+            }
+
+            .next-steps-card {
+                padding: 16px;
+            }
+
+            .feedback-buttons {
+                flex-direction: column;
+            }
+
+            .feedback-btn {
+                width: 100%;
+            }
+        }
+
+        /* ============================================
+           ANIMATIONS & TRANSITIONS
+           ============================================ */
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.6;
+            }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <header class="header">
+        <div class="header-container">
+            <a href="#" class="logo">
+                <div class="logo-text">
+                    <div class="logo-icon">⚙</div>
+                    <span>FixIt</span>
+                </div>
+            </a>
+            <div class="nav-right">
+                <div class="header-text" id="headerText">FixIt Diagnosis</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <div class="container">
+        <!-- PROGRESS SECTION -->
+        <div class="progress-section" id="progressSection">
+            <div class="progress-header">
+                <div class="progress-label">Troubleshooting Progress</div>
+                <div class="progress-step" id="progressStep">Step 1 of 3</div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 33.33%"></div>
+            </div>
+        </div>
+
+        <!-- SCREEN 1: DIAGNOSIS QUESTION -->
+        <div class="screen" id="screen1">
+            <div class="question-card">
+                <div class="question-text" id="questionText">Does the device turn on?</div>
+                <div class="question-description" id="questionDescription">
+                    This helps us understand the basic state of your device.
+                </div>
+                <a href="#" class="why-link" id="whyLink" onclick="event.preventDefault(); showModal('Why are we asking?', 'Understanding whether your device powers on is crucial for diagnosing hardware vs software issues. If your device won\'t turn on at all, it typically indicates a power supply or hardware problem.')">
+                    Why are we asking this?
+                </a>
+            </div>
+
+            <div class="answers-container" id="answersContainer">
+                <button class="answer-btn" onclick="selectAnswer(1, 'Yes', 'device-turns-on')">
+                    <span class="answer-icon">✓</span>
+                    <span class="answer-label">Yes</span>
+                </button>
+                <button class="answer-btn" onclick="selectAnswer(2, 'No', 'device-not-turning-on')">
+                    <span class="answer-icon">✗</span>
+                    <span class="answer-label">No</span>
+                </button>
+                <button class="answer-btn" onclick="selectAnswer(3, 'Not Sure', 'device-uncertain')">
+                    <span class="answer-icon">?</span>
+                    <span class="answer-label">Not Sure</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- SCREEN 2: PROBLEM DESCRIPTION -->
+        <div class="screen hidden" id="screen2">
+            <h1 class="screen-title">Let's start with the basics.</h1>
+            <p class="screen-subtitle">Help us understand your issue better</p>
+
+            <!-- Problem Description -->
+            <div class="form-group">
+                <label class="form-label">Describe the problem</label>
+                <p class="form-description">What exactly are you experiencing?</p>
+                <textarea id="problemDescription" placeholder="E.g., My laptop is running very slowly, applications take forever to open, and it keeps freezing..."></textarea>
+            </div>
+
+            <!-- Device Selection -->
+            <div class="form-section">
+                <div class="form-section-title">Device Type</div>
+                <div class="device-grid" id="deviceGrid">
+                    <button class="device-card" onclick="selectDevice(this, 'laptop')">
+                        <span class="device-icon">💻</span>
+                        <span class="device-name">Laptop</span>
+                    </button>
+                    <button class="device-card" onclick="selectDevice(this, 'phone')">
+                        <span class="device-icon">📱</span>
+                        <span class="device-name">Phone</span>
+                    </button>
+                    <button class="device-card" onclick="selectDevice(this, 'tablet')">
+                        <span class="device-icon">📱</span>
+                        <span class="device-name">Tablet</span>
+                    </button>
+                    <button class="device-card" onclick="selectDevice(this, 'tv')">
+                        <span class="device-icon">📺</span>
+                        <span class="device-name">TV</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- When it started -->
+            <div class="form-group">
+                <label class="form-label">When did the problem start?</label>
+                <select id="whenStarted">
+                    <option value="">-- Select --</option>
+                    <option value="today">Today</option>
+                    <option value="this-week">This week</option>
+                    <option value="this-month">This month</option>
+                    <option value="longer">Longer than a month</option>
+                </select>
+            </div>
+
+            <!-- Additional context -->
+            <div class="form-group">
+                <label class="form-label">What happened before the problem started?</label>
+                <p class="form-description">Optional: Any recent changes, updates, or events?</p>
+                <textarea id="eventContext" placeholder="E.g., Installed new software, updated Windows, spilled liquid, etc."></textarea>
+                <div class="textarea-optional">Optional</div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-secondary" onclick="goToScreen(1)">Back</button>
+                <button class="btn btn-primary" onclick="validateAndContinue()">Continue to Diagnosis</button>
+            </div>
+        </div>
+
+        <!-- SCREEN 3: DIAGNOSIS RESULTS -->
+        <div class="screen hidden" id="screen3">
+            <div class="diagnosis-header">
+                <div class="diagnosis-badge">✓ DIAGNOSIS COMPLETE</div>
+                <h1 class="diagnosis-title" id="diagnosisTitle">Laptop Overheating</h1>
+                <p class="diagnosis-explanation" id="diagnosisExplanation">
+                    Based on your responses, your laptop is likely experiencing thermal issues. This could be due to dust accumulation in cooling vents, a failing fan, or insufficient ventilation space. Overheating can cause performance degradation and potentially damage components if not addressed.
+                </p>
+            </div>
+
+            <!-- Likely Causes -->
+            <div class="causes-section">
+                <h2 class="section-title">Likely Causes</h2>
+                <div class="causes-grid" id="causesGrid">
+                    <div class="cause-card">
+                        <div class="cause-number">01</div>
+                        <div class="cause-title">Dust Accumulation</div>
+                        <div class="cause-description">Dust buildup in cooling vents restricts airflow, causing the system to overheat.</div>
+                    </div>
+                    <div class="cause-card">
+                        <div class="cause-number">02</div>
+                        <div class="cause-title">Failing Cooling Fan</div>
+                        <div class="cause-description">A malfunctioning fan cannot effectively dissipate heat from the processor.</div>
+                    </div>
+                    <div class="cause-card">
+                        <div class="cause-number">03</div>
+                        <div class="cause-title">Poor Ventilation</div>
+                        <div class="cause-description">Using the laptop on soft surfaces blocks air vents and reduces cooling efficiency.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recommended Next Steps -->
+            <div class="next-steps-card">
+                <h3 class="next-steps-title">Recommended Next Steps</h3>
+                <ul class="next-steps-list">
+                    <li class="next-steps-item">Clean the cooling vents with compressed air</li>
+                    <li class="next-steps-item">Check fan operation using system monitoring tools</li>
+                    <li class="next-steps-item">Ensure proper laptop ventilation on hard surfaces</li>
+                    <li class="next-steps-item">If problem persists, contact professional technician</li>
+                </ul>
+            </div>
+
+            <!-- Confidence Section -->
+            <div class="confidence-section">
+                <div class="confidence-header">
+                    <div class="confidence-label">Diagnosis Confidence</div>
+                    <div class="confidence-bar">
+                        <div class="confidence-fill"></div>
+                    </div>
+                    <div class="confidence-percent">85%</div>
+                </div>
+            </div>
+
+            <!-- Why This Diagnosis -->
+            <div class="expandable-section" id="whyDiagnosis">
+                <div class="expandable-header" onclick="toggleExpandable(this)">
+                    <span>Why this diagnosis?</span>
+                    <span class="expandable-toggle">▼</span>
+                </div>
+                <div class="expandable-content">
+                    <div class="expandable-text">
+                        The diagnosis is based on your reported symptoms of device performance degradation. When combined with your answers about the device turning on but running slowly, along with the timeframe of when the issue started, thermal issues are the most likely culprit. The diagnosis confidence is 85% because we cannot directly measure your system's temperature through this assessment, but the symptoms strongly align with overheating patterns.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feedback Section -->
+            <div class="feedback-section">
+                <div class="feedback-title">Was this diagnosis helpful?</div>
+                <div class="feedback-buttons">
+                    <button class="feedback-btn helpful" onclick="provideFeedback('helpful')">👍 Yes, it helped!</button>
+                    <button class="feedback-btn not-helpful" onclick="provideFeedback('not-helpful')">👎 Not helpful</button>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-secondary" onclick="resetDiagnosis()">Start New Diagnosis</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-col">
+                <h3>Safety Protocols</h3>
+                <ul>
+                    <li><a href="#safety1">Power Off Before Cleaning</a></li>
+                    <li><a href="#safety2">Avoid Static Electricity</a></li>
+                    <li><a href="#safety3">Professional Help When Needed</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Support</h3>
+                <ul>
+                    <li><a href="#contact">Contact Support</a></li>
+                    <li><a href="#faq">FAQ</a></li>
+                    <li><a href="#guides">Troubleshooting Guides</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Legal</h3>
+                <ul>
+                    <li><a href="#privacy">Privacy Policy</a></li>
+                    <li><a href="#terms">Terms of Service</a></li>
+                    <li><a href="#cookie">Cookie Policy</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 FixIt - Intelligent Troubleshooting Platform. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // ============================================
+        // APPLICATION STATE
+        // ============================================
+        const APPSCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzwfoxnvY9boZh8r3NcFVkKixHoSu5zjXhSjp0r5Mn9LAAshBlJi3ddazfT5mvVum1Wkw/exec';
+
+        const appState = {
+            currentScreen: 1,
+            selectedAnswer: null,
+            selectedDevice: null,
+            problemDescription: '',
+            whenStarted: '',
+            eventContext: '',
+            diagnosis: null
+        };
+
+        const diagnoses = {
+            'device-turns-on': {
+                title: 'Laptop Performance Degradation',
+                explanation: 'Based on your responses, your device is experiencing performance issues. This could be due to several factors including software bloat, insufficient RAM, or thermal problems.',
+                causes: [
+                    { title: 'Software Bloat', description: 'Too many background processes consuming system resources.' },
+                    { title: 'Insufficient RAM', description: 'System memory being fully utilized causing slowdowns.' },
+                    { title: 'Thermal Issues', description: 'Overheating causing CPU throttling and performance reduction.' }
+                ],
+                nextSteps: [
+                    'Check system resource usage in Task Manager or Activity Monitor',
+                    'Disable unnecessary startup programs',
+                    'Clean cooling vents and ensure proper ventilation',
+                    'Consider upgrading RAM if needed'
+                ]
+            },
+            'device-not-turning-on': {
+                title: 'Power Supply or Hardware Failure',
+                explanation: 'Since your device won\'t turn on, this suggests a critical hardware issue. This could be a power supply problem, battery failure, or internal component damage.',
+                causes: [
+                    { title: 'Power Supply Failure', description: 'The power adapter or internal power supply unit may be defective.' },
+                    { title: 'Battery Failure', description: 'For laptops and mobile devices, battery may be completely depleted or failed.' },
+                    { title: 'Hardware Component Damage', description: 'Critical internal components may have failed and need replacement.' }
+                ],
+                nextSteps: [
+                    'Try with a different power adapter if available',
+                    'Let battery charge for at least 30 minutes',
+                    'Try hard reset by holding power button for 10+ seconds',
+                    'Contact professional technician if none of the above work'
+                ]
+            },
+            'device-uncertain': {
+                title: 'Uncertain Power State',
+                explanation: 'Since you\'re unsure if your device powers on, we recommend performing a proper power test first. This will help determine if you\'re dealing with a display issue or actual power failure.',
+                causes: [
+                    { title: 'Display Problem', description: 'Device may be on but display not showing anything (backlight issue).' },
+                    { title: 'Power Button Malfunction', description: 'Power button may be stuck or not making proper contact.' },
+                    { title: 'Partial Power Delivery', description: 'Device may be getting partial power causing startup loops.' }
+                ],
+                nextSteps: [
+                    'Try connecting to external monitor to test display',
+                    'Hold power button for 30 seconds to perform hard reset',
+                    'Listen for fan noise or feel for vibrations when power button pressed',
+                    'If still uncertain, seek professional diagnosis'
+                ]
+            }
+        };
+
+        // ============================================
+        // NAVIGATION & SCREEN MANAGEMENT
+        // ============================================
+        function goToScreen(screenNumber) {
+            const screens = document.querySelectorAll('.screen');
+            screens.forEach(screen => screen.classList.add('hidden'));
+            
+            const targetScreen = document.getElementById(`screen${screenNumber}`);
+            if (targetScreen) {
+                targetScreen.classList.remove('hidden');
+                appState.currentScreen = screenNumber;
+                updateProgress(screenNumber);
+                window.scrollTo(0, 0);
+            }
+        }
+
+        function updateProgress(screenNumber) {
+            const totalSteps = 3;
+            const progressPercent = (screenNumber / totalSteps) * 100;
+            document.getElementById('progressFill').style.width = progressPercent + '%';
+            document.getElementById('progressStep').textContent = `Step ${screenNumber} of ${totalSteps}`;
+        }
+
+        // ============================================
+        // SCREEN 1: ANSWER SELECTION
+        // ============================================
+        function selectAnswer(index, label, answerKey) {
+            const buttons = document.querySelectorAll('.answer-btn');
+            buttons.forEach(btn => btn.classList.remove('selected'));
+            event.target.closest('.answer-btn').classList.add('selected');
+            
+            appState.selectedAnswer = {
+                index: index,
+                label: label,
+                key: answerKey
+            };
+
+            // Auto-advance after brief delay
+            setTimeout(() => goToScreen(2), 300);
+        }
+
+        // ============================================
+        // SCREEN 2: FORM HANDLING
+        // ============================================
+        function selectDevice(element, device) {
+            const cards = document.querySelectorAll('.device-card');
+            cards.forEach(card => card.classList.remove('selected'));
+            element.classList.add('selected');
+            appState.selectedDevice = device;
+        }
+
+        function validateAndContinue() {
+            const problemDesc = document.getElementById('problemDescription').value.trim();
+            const whenStarted = document.getElementById('whenStarted').value;
+
+            if (!appState.selectedDevice) {
+                alert('Please select a device type');
+                return;
+            }
+
+            if (!problemDesc) {
+                alert('Please describe the problem');
+                return;
+            }
+
+            if (!whenStarted) {
+                alert('Please select when the problem started');
+                return;
+            }
+
+            appState.problemDescription = problemDesc;
+            appState.whenStarted = whenStarted;
+            appState.eventContext = document.getElementById('eventContext').value;
+
+            generateDiagnosis();
+            goToScreen(3);
+        }
+
+        // ============================================
+        // SCREEN 3: DIAGNOSIS GENERATION
+        // ============================================
+        function generateDiagnosis() {
+            const diagnosisData = diagnoses[appState.selectedAnswer.key];
+            appState.diagnosis = diagnosisData;
+
+            // Update diagnosis display
+            document.getElementById('diagnosisTitle').textContent = diagnosisData.title;
+            document.getElementById('diagnosisExplanation').textContent = diagnosisData.explanation;
+
+            // Generate causes cards
+            const causesGrid = document.getElementById('causesGrid');
+            causesGrid.innerHTML = '';
+            diagnosisData.causes.forEach((cause, index) => {
+                const card = document.createElement('div');
+                card.className = 'cause-card';
+                card.innerHTML = `
+                    <div class="cause-number">${String(index + 1).padStart(2, '0')}</div>
+                    <div class="cause-title">${cause.title}</div>
+                    <div class="cause-description">${cause.description}</div>
+                `;
+                causesGrid.appendChild(card);
+            });
+
+            // Update next steps
+            const nextStepsList = document.querySelector('.next-steps-list');
+            nextStepsList.innerHTML = '';
+            diagnosisData.nextSteps.forEach(step => {
+                const item = document.createElement('li');
+                item.className = 'next-steps-item';
+                item.textContent = step;
+                nextStepsList.appendChild(item);
+            });
+
+            // Auto-submit diagnosis to Google Sheets
+            submitDiagnosisToSheets();
+        }
+
+        function submitDiagnosisToSheets() {
+            try {
+                const timestamp = new Date().toLocaleString('en-IN');
+                const selectedAnswer = appState.selectedAnswer ? appState.selectedAnswer.label : '';
+                const selectedDevice = appState.selectedDevice || '';
+                const problemDescription = appState.problemDescription || '';
+                const whenStarted = appState.whenStarted || '';
+                const eventContext = appState.eventContext || '';
+                const diagnosisTitle = appState.diagnosis ? appState.diagnosis.title : '';
+
+                // Build URL with query parameters
+                const url = APPSCRIPT_URL + '?' + new URLSearchParams({
+                    timestamp: timestamp,
+                    selectedAnswer: selectedAnswer,
+                    selectedDevice: selectedDevice,
+                    problemDescription: problemDescription,
+                    whenStarted: whenStarted,
+                    eventContext: eventContext,
+                    diagnosisTitle: diagnosisTitle,
+                    userEmail: '',
+                    userFeedback: ''
+                });
+
+                // Make GET request with no-cors mode
+                fetch(url, {
+                    method: 'GET',
+                    mode: 'no-cors'
+                }).then(() => {
+                    console.log('✓ Diagnosis saved to Google Sheets');
+                }).catch(error => {
+                    console.error('Error saving diagnosis:', error);
+                });
+
+            } catch (error) {
+                console.error('Error in submitDiagnosisToSheets:', error);
+            }
+        }
+
+        function toggleExpandable(element) {
+            element.parentElement.classList.toggle('expanded');
+        }
+
+        function provideFeedback(type) {
+            // Send feedback to Google Sheets
+            submitToGoogleSheets(type);
+            
+            const message = type === 'helpful' 
+                ? '✓ Thank you for the feedback! We\'ll keep improving our diagnosis system.'
+                : '⚠ Thank you for the feedback. We\'ll work on improving this diagnosis.';
+            
+            alert(message);
+        }
+
+        // ============================================
+        // GOOGLE SHEETS INTEGRATION
+        // ============================================
+        function submitToGoogleSheets(userFeedback) {
+            try {
+                const timestamp = new Date().toLocaleString('en-IN');
+                const selectedAnswer = appState.selectedAnswer ? appState.selectedAnswer.label : '';
+                const selectedDevice = appState.selectedDevice || '';
+                const problemDescription = appState.problemDescription || '';
+                const whenStarted = appState.whenStarted || '';
+                const eventContext = appState.eventContext || '';
+                const diagnosisTitle = appState.diagnosis ? appState.diagnosis.title : '';
+
+                // Build URL with query parameters
+                const url = APPSCRIPT_URL + '?' + new URLSearchParams({
+                    timestamp: timestamp,
+                    selectedAnswer: selectedAnswer,
+                    selectedDevice: selectedDevice,
+                    problemDescription: problemDescription,
+                    whenStarted: whenStarted,
+                    eventContext: eventContext,
+                    diagnosisTitle: diagnosisTitle,
+                    userEmail: '',
+                    userFeedback: userFeedback
+                });
+
+                // Make GET request with no-cors mode
+                fetch(url, {
+                    method: 'GET',
+                    mode: 'no-cors'
+                }).then(() => {
+                    console.log('Diagnosis submitted to Google Sheets successfully');
+                }).catch(error => {
+                    console.error('Error submitting to Google Sheets:', error);
+                });
+
+            } catch (error) {
+                console.error('Error in submitToGoogleSheets:', error);
+            }
+        }
+
+        function resetDiagnosis() {
+            appState.currentScreen = 1;
+            appState.selectedAnswer = null;
+            appState.selectedDevice = null;
+            appState.problemDescription = '';
+            appState.whenStarted = '';
+            appState.eventContext = '';
+
+            // Reset form
+            document.getElementById('problemDescription').value = '';
+            document.getElementById('whenStarted').value = '';
+            document.getElementById('eventContext').value = '';
+
+            document.querySelectorAll('.answer-btn').forEach(btn => btn.classList.remove('selected'));
+            document.querySelectorAll('.device-card').forEach(card => card.classList.remove('selected'));
+
+            goToScreen(1);
+        }
+
+        // ============================================
+        // UTILITY FUNCTIONS
+        // ============================================
+        function showModal(title, content) {
+            const message = `${title}\n\n${content}`;
+            alert(message);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateProgress(1);
+        });
+    </script>
+</body>
+</html>
