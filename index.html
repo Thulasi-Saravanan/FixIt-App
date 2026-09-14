@@ -1459,7 +1459,8 @@ const diagnosisRules = [
             "power button does nothing"
         ],
         title: "Power Issue",
-        severity: "high",
+                description: "The device is not receiving enough power to start normally, which may be related to the battery, charger, power source, or an internal hardware problem.",
+severity: "high",
         causes: [
             "The battery may be completely drained.",
             "The power adapter or charging cable may be faulty.",
@@ -1495,7 +1496,8 @@ const diagnosisRules = [
             "network slow"
         ],
         title: "Slow Wi-Fi Connection",
-        severity: "medium",
+                description: "Slow internet performance may be caused by a weak Wi-Fi signal, too many connected devices, network congestion, router issues, or a temporary service problem.",
+severity: "medium",
         causes: [
             "The Wi-Fi signal may be weak.",
             "Too many devices may be using the network.",
@@ -1530,7 +1532,8 @@ const diagnosisRules = [
             "wi-fi disconnected"
         ],
         title: "Wi-Fi Connection Problem",
-        severity: "medium",
+                description: "The device is unable to maintain a working internet connection, which may be related to the router, network settings, wireless availability, or an internet service outage.",
+severity: "medium",
         causes: [
             "The router may have lost its internet connection.",
             "The Wi-Fi network may be temporarily unavailable.",
@@ -1564,7 +1567,8 @@ const diagnosisRules = [
             "hot while gaming"
         ],
         title: "Heating Issue",
-        severity: "high",
+                description: "High device temperatures may be caused by heavy processing, restricted airflow, dust buildup, a hot environment, or an internal hardware problem.",
+severity: "high",
         causes: [
             "Heavy applications or games may be putting high load on the device.",
             "Blocked ventilation may be reducing airflow.",
@@ -1599,7 +1603,8 @@ const diagnosisRules = [
             "battery not charging"
         ],
         title: "Charging Issue",
-        severity: "medium",
+                description: "Charging problems may be related to a damaged cable, faulty power adapter, blocked charging port, unstable power source, or battery degradation.",
+severity: "medium",
         causes: [
             "The charging cable may be damaged.",
             "The power adapter may not be working correctly.",
@@ -1638,7 +1643,8 @@ const diagnosisRules = [
             "applications slow"
         ],
         title: "Performance Issue",
-        severity: "medium",
+                description: "Slow or unresponsive device performance may be caused by background applications, limited storage or memory, high resource usage, outdated software, or overheating.",
+severity: "medium",
         causes: [
             "Too many applications may be running in the background.",
             "The device may have limited available storage or memory.",
@@ -1673,7 +1679,8 @@ const diagnosisRules = [
             "display flickering"
         ],
         title: "Display Issue",
-        severity: "high",
+                description: "Screen and display problems may be caused by connection issues, graphics or software errors, incorrect display settings, physical damage, or failing display hardware.",
+severity: "high",
         causes: [
             "The display connection may be loose or damaged.",
             "A software or graphics issue may be affecting the display.",
@@ -1703,7 +1710,8 @@ const diagnosisRules = [
             "battery life poor"
         ],
         title: "Battery Drain Issue",
-        severity: "medium",
+                description: "Rapid battery drain may be caused by background applications, high screen brightness, active wireless services, heavy battery usage from an app, or reduced battery capacity.",
+severity: "medium",
         causes: [
             "Background applications may be consuming battery power.",
             "High screen brightness may increase battery usage.",
@@ -1732,7 +1740,8 @@ const diagnosisRules = [
             "fan running"
         ],
         title: "Laptop Fan / Cooling Issue",
-        severity: "medium",
+                description: "A loud or continuously running laptop fan may indicate high CPU or GPU usage, restricted airflow, background activity, or elevated device temperature.",
+severity: "medium",
         causes: [
             "High CPU or GPU usage may be increasing fan speed.",
             "Dust buildup may be restricting airflow.",
@@ -1760,7 +1769,8 @@ const diagnosisRules = [
             "desktop overheating"
         ],
         title: "Desktop Performance Issue",
-        severity: "medium",
+                description: "Slow desktop performance may be caused by background resource usage, insufficient storage or memory, restricted airflow, outdated software, or a hardware problem.",
+severity: "medium",
         causes: [
             "Background applications may be consuming system resources.",
             "Insufficient storage or memory may affect performance.",
@@ -1791,7 +1801,8 @@ const diagnosisRules = [
             "picture not showing"
         ],
         title: "TV Display / Power Issue",
-        severity: "high",
+                description: "TV power or picture problems may be caused by unstable power, an incorrect input source, a faulty video cable, software errors, or display hardware failure.",
+severity: "high",
         causes: [
             "The TV may not be receiving power correctly.",
             "The selected input source may be incorrect.",
@@ -1820,7 +1831,8 @@ const diagnosisRules = [
             "tablet overheating"
         ],
         title: "Tablet Performance / Hardware Issue",
-        severity: "medium",
+                description: "Tablet performance problems may be caused by background applications, low storage or memory, outdated software, charging or battery issues, or excessive heat.",
+severity: "medium",
         causes: [
             "Background applications may be consuming resources.",
             "Storage or memory may be nearly full.",
@@ -2317,8 +2329,7 @@ function renderDiagnosis(diagnosis) {
             </h2>
 
             <p>
-                Based on the information you provided,
-                FixIt identified the following possibilities.
+                ${escapeHTML(diagnosis.description)}
             </p>
 
             <span class="severity severity-${escapeHTML(diagnosis.severity)}">
