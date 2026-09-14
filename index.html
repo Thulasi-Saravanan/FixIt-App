@@ -1,3139 +1,3025 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>FixIt - Intelligent Troubleshooting Platform</title>
 
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+```
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --primary-light: #60a5fa;
+        --background: #f5f7fb;
+        --card: #ffffff;
+        --text: #111827;
+        --muted: #6b7280;
+        --border: #e5e7eb;
+        --success: #16a34a;
+        --warning: #d97706;
+        --danger: #dc2626;
+    }
+
+    body {
+        font-family:
+            Inter,
+            -apple-system,
+            BlinkMacSystemFont,
+            "Segoe UI",
+            Roboto,
+            Arial,
+            sans-serif;
+        background: var(--background);
+        color: var(--text);
+        min-height: 100vh;
+        line-height: 1.6;
+    }
+
+    button,
+    input,
+    textarea,
+    select {
+        font: inherit;
+    }
+
+    button {
+        cursor: pointer;
+    }
+
+    .navbar {
+        width: 100%;
+        min-height: 70px;
+        padding: 12px 6%;
+        background: #111827;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+    }
+
+    .brand {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+    }
+
+    .brand-icon {
+        width: 42px;
+        height: 42px;
+        flex-shrink: 0;
+    }
+
+    .brand-icon svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+    }
+
+    .brand-name {
+        font-size: 27px;
+        font-weight: 800;
+        letter-spacing: -0.8px;
+        color: white;
+    }
+
+    .brand-name span {
+        color: var(--primary-light);
+    }
+
+    .nav-text {
+        color: #cbd5e1;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    .container {
+        width: min(1100px, 92%);
+        margin: 0 auto;
+        padding: 45px 0;
+    }
+
+    .hero {
+        text-align: center;
+        margin-bottom: 35px;
+    }
+
+    .hero h1 {
+        font-size: clamp(32px, 5vw, 52px);
+        line-height: 1.1;
+        margin-bottom: 15px;
+        font-weight: 800;
+        letter-spacing: -1.5px;
+    }
+
+    .hero h1 span {
+        color: var(--primary);
+    }
+
+    .hero p {
+        max-width: 700px;
+        margin: auto;
+        color: var(--muted);
+        font-size: 17px;
+    }
+
+    .progress-container {
+        max-width: 750px;
+        margin: 0 auto 30px;
+    }
+
+    .progress-line {
+        height: 4px;
+        background: var(--border);
+        position: relative;
+        margin: 0 40px;
+        top: 18px;
+        z-index: 0;
+    }
+
+    .progress-active {
+        height: 4px;
+        width: 0%;
+        background: var(--primary);
+        transition: width 0.3s ease;
+    }
+
+    .progress-steps {
+        display: flex;
+        justify-content: space-between;
+        position: relative;
+        z-index: 1;
+    }
+
+    .progress-step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 7px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .progress-number {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: white;
+        border: 2px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+    }
+
+    .progress-step.active {
+        color: var(--primary);
+    }
+
+    .progress-step.active .progress-number {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: white;
+    }
+
+    .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 22px;
+        box-shadow: 0 15px 40px rgba(15, 23, 42, 0.08);
+        overflow: hidden;
+    }
+
+    .screen {
+        padding: 40px;
+        display: none;
+    }
+
+    .screen.active {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(8px);
         }
 
-        :root {
-            --primary: #2563eb;
-            --primary-dark: #1d4ed8;
-            --primary-light: #60a5fa;
-            --background: #f5f7fb;
-            --card: #ffffff;
-            --text: #111827;
-            --muted: #6b7280;
-            --border: #e5e7eb;
-            --success: #16a34a;
-            --warning: #d97706;
-            --danger: #dc2626;
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .screen-title {
+        text-align: center;
+        margin-bottom: 8px;
+        font-size: 28px;
+    }
+
+    .screen-subtitle {
+        text-align: center;
+        color: var(--muted);
+        margin-bottom: 30px;
+    }
+
+    .option-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .option-card {
+        border: 2px solid var(--border);
+        background: white;
+        border-radius: 16px;
+        padding: 25px 18px;
+        text-align: center;
+        transition:
+            transform 0.2s ease,
+            border-color 0.2s ease,
+            box-shadow 0.2s ease;
+    }
+
+    .option-card:hover {
+        transform: translateY(-3px);
+        border-color: var(--primary-light);
+        box-shadow: 0 8px 25px rgba(37, 99, 235, 0.1);
+    }
+
+    .option-card.selected {
+        border-color: var(--primary);
+        background: #eff6ff;
+    }
+
+    .option-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        background: #eff6ff;
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 12px;
+        font-size: 25px;
+        font-weight: 800;
+    }
+
+    .option-card h3 {
+        margin-bottom: 5px;
+    }
+
+    .option-card p {
+        color: var(--muted);
+        font-size: 13px;
+    }
+
+    .device-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+        margin-bottom: 30px;
+    }
+
+    .device-card {
+        border: 2px solid var(--border);
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        text-align: center;
+        transition: all 0.2s ease;
+    }
+
+    .device-card:hover {
+        border-color: var(--primary-light);
+        transform: translateY(-2px);
+    }
+
+    .device-card.selected {
+        border-color: var(--primary);
+        background: #eff6ff;
+    }
+
+    .device-icon {
+        font-size: 34px;
+        margin-bottom: 7px;
+    }
+
+    .device-card strong {
+        display: block;
+    }
+
+    .form-group {
+        margin-bottom: 22px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 700;
+        font-size: 14px;
+    }
+
+    .required {
+        color: var(--danger);
+    }
+
+    textarea,
+    select {
+        width: 100%;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 13px 14px;
+        outline: none;
+        background: white;
+        color: var(--text);
+        transition:
+            border-color 0.2s ease,
+            box-shadow 0.2s ease;
+    }
+
+    textarea {
+        min-height: 125px;
+        resize: vertical;
+        display: block;
+        vertical-align: top;
+        text-align: left;
+        line-height: 1.5;
+    }
+
+    textarea::placeholder {
+        text-align: left;
+    }
+
+    textarea:focus,
+    select:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .helper-text {
+        color: var(--muted);
+        font-size: 12px;
+        margin-top: 6px;
+    }
+
+    .button-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 15px;
+        margin-top: 30px;
+    }
+
+    .btn {
+        border: none;
+        border-radius: 12px;
+        padding: 13px 22px;
+        font-weight: 700;
+        font-size: 14px;
+        transition:
+            transform 0.2s ease,
+            box-shadow 0.2s ease,
+            background 0.2s ease;
+    }
+
+    .btn:hover {
+        transform: translateY(-1px);
+    }
+
+    .btn-primary {
+        background: var(--primary);
+        color: white;
+        box-shadow: 0 7px 18px rgba(37, 99, 235, 0.22);
+    }
+
+    .btn-primary:hover {
+        background: var(--primary-dark);
+    }
+
+    .btn-secondary {
+        background: #eef2f7;
+        color: #374151;
+    }
+
+    .btn-secondary:hover {
+        background: #e5e7eb;
+    }
+
+    .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+
+    .loading {
+        text-align: center;
+        padding: 40px 20px;
+    }
+
+    .spinner {
+        width: 50px;
+        height: 50px;
+        border: 5px solid #dbeafe;
+        border-top-color: var(--primary);
+        border-radius: 50%;
+        margin: 0 auto 18px;
+        animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .diagnosis-header {
+        text-align: center;
+        padding: 15px 0 30px;
+    }
+
+    .diagnosis-icon {
+        width: 70px;
+        height: 70px;
+        margin: 0 auto 15px;
+        background: #dcfce7;
+        color: var(--success);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 35px;
+    }
+
+    .diagnosis-header h2 {
+        font-size: 28px;
+        margin-bottom: 7px;
+    }
+
+    .diagnosis-header p {
+        color: var(--muted);
+    }
+
+    .result-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .result-box {
+        background: #f8fafc;
+        border: 1px solid var(--border);
+        border-radius: 15px;
+        padding: 22px;
+    }
+
+    .result-box h3 {
+        font-size: 16px;
+        margin-bottom: 12px;
+    }
+
+    .result-box ul,
+    .result-box ol {
+        padding-left: 20px;
+    }
+
+    .result-box li {
+        margin-bottom: 8px;
+        color: #4b5563;
+    }
+
+    .severity {
+        display: inline-block;
+        padding: 5px 11px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 800;
+        margin-top: 8px;
+    }
+
+    .severity-low {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .severity-medium {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .severity-high {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    footer {
+        text-align: center;
+        padding: 30px 20px;
+        color: var(--muted);
+        font-size: 13px;
+    }
+
+    footer button {
+        background: none;
+        border: none;
+        color: var(--primary);
+        font-weight: 700;
+        margin: 0 7px;
+    }
+
+    .modal {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.65);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        z-index: 1000;
+    }
+
+    .modal.show {
+        display: flex;
+    }
+
+    .modal-content {
+        width: min(600px, 100%);
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        position: relative;
+        max-height: 85vh;
+        overflow-y: auto;
+        animation: modalIn 0.25s ease;
+    }
+
+    @keyframes modalIn {
+        from {
+            opacity: 0;
+            transform: scale(0.96);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    .modal-content h2 {
+        margin-bottom: 15px;
+    }
+
+    .modal-content p {
+        color: #4b5563;
+        margin-bottom: 14px;
+    }
+
+    .close-modal {
+        position: absolute;
+        top: 14px;
+        right: 16px;
+        width: 35px;
+        height: 35px;
+        border: none;
+        border-radius: 50%;
+        background: #f3f4f6;
+        font-size: 20px;
+    }
+
+    @media print {
+        .navbar,
+        footer,
+        .progress-container,
+        .button-row {
+            display: none !important;
         }
 
         body {
-            font-family:
-                Inter,
-                -apple-system,
-                BlinkMacSystemFont,
-                "Segoe UI",
-                Roboto,
-                Arial,
-                sans-serif;
-            background: var(--background);
-            color: var(--text);
-            min-height: 100vh;
-            line-height: 1.6;
+            background: white;
         }
-
-        button,
-        input,
-        textarea,
-        select {
-            font: inherit;
-        }
-
-        button {
-            cursor: pointer;
-        }
-
-        /* =========================
-           NAVBAR
-        ========================= */
-
-        .navbar {
-            width: 100%;
-            min-height: 70px;
-            padding: 12px 6%;
-            background: #111827;
-
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 20px;
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 11px;
-        }
-
-        .brand-icon {
-            width: 42px;
-            height: 42px;
-            flex-shrink: 0;
-        }
-
-        .brand-icon svg {
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
-
-        .brand-name {
-            font-size: 27px;
-            font-weight: 800;
-            letter-spacing: -0.8px;
-            color: white;
-        }
-
-        .brand-name span {
-            color: var(--primary-light);
-        }
-
-        .nav-text {
-            color: #cbd5e1;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        /* =========================
-           MAIN
-        ========================= */
 
         .container {
-            width: min(1100px, 92%);
-            margin: 0 auto;
-            padding: 45px 0;
+            width: 100%;
+            padding: 0;
         }
-
-        /* =========================
-           HERO
-        ========================= */
-
-        .hero {
-            text-align: center;
-            margin-bottom: 35px;
-        }
-
-        .hero h1 {
-            font-size: clamp(32px, 5vw, 52px);
-            line-height: 1.1;
-            margin-bottom: 15px;
-            font-weight: 800;
-            letter-spacing: -1.5px;
-        }
-
-        .hero h1 span {
-            color: var(--primary);
-        }
-
-        .hero p {
-            max-width: 700px;
-            margin: auto;
-            color: var(--muted);
-            font-size: 17px;
-        }
-
-        /* =========================
-           PROGRESS
-        ========================= */
-
-        .progress-container {
-            max-width: 750px;
-            margin: 0 auto 30px;
-        }
-
-        .progress-line {
-            height: 4px;
-            background: var(--border);
-            position: relative;
-            margin: 0 40px;
-            top: 18px;
-            z-index: 0;
-        }
-
-        .progress-active {
-            height: 4px;
-            width: 0%;
-            background: var(--primary);
-            transition: width 0.3s ease;
-        }
-
-        .progress-steps {
-            display: flex;
-            justify-content: space-between;
-            position: relative;
-            z-index: 1;
-        }
-
-        .progress-step {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 7px;
-            color: var(--muted);
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        .progress-number {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            background: white;
-            border: 2px solid var(--border);
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            transition: all 0.3s ease;
-        }
-
-        .progress-step.active {
-            color: var(--primary);
-        }
-
-        .progress-step.active .progress-number {
-            background: var(--primary);
-            border-color: var(--primary);
-            color: white;
-        }
-
-        /* =========================
-           CARD
-        ========================= */
 
         .card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 22px;
-
-            box-shadow:
-                0 15px 40px rgba(15, 23, 42, 0.08);
-
-            overflow: hidden;
-        }
-
-        .screen {
-            padding: 40px;
-            display: none;
-        }
-
-        .screen.active {
-            display: block;
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(8px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .screen-title {
-            text-align: center;
-            margin-bottom: 8px;
-            font-size: 28px;
-        }
-
-        .screen-subtitle {
-            text-align: center;
-            color: var(--muted);
-            margin-bottom: 30px;
-        }
-
-        /* =========================
-           OPTION CARDS
-        ========================= */
-
-        .option-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 18px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .option-card {
-            border: 2px solid var(--border);
-            background: white;
-            border-radius: 16px;
-
-            padding: 25px 18px;
-
-            text-align: center;
-
-            transition:
-                transform 0.2s ease,
-                border-color 0.2s ease,
-                box-shadow 0.2s ease;
-        }
-
-        .option-card:hover {
-            transform: translateY(-3px);
-            border-color: var(--primary-light);
-            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.1);
-        }
-
-        .option-card.selected {
-            border-color: var(--primary);
-            background: #eff6ff;
-        }
-
-        .option-icon {
-            font-size: 36px;
-            margin-bottom: 10px;
-        }
-
-        .option-card h3 {
-            margin-bottom: 5px;
-        }
-
-        .option-card p {
-            color: var(--muted);
-            font-size: 13px;
-        }
-
-        /* =========================
-           DEVICE GRID
-        ========================= */
-
-        .device-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-
-        .device-card {
-            border: 2px solid var(--border);
-            background: white;
-
-            border-radius: 15px;
-            padding: 20px;
-
-            text-align: center;
-
-            transition: all 0.2s ease;
-        }
-
-        .device-card:hover {
-            border-color: var(--primary-light);
-            transform: translateY(-2px);
-        }
-
-        .device-card.selected {
-            border-color: var(--primary);
-            background: #eff6ff;
-        }
-
-        .device-icon {
-            font-size: 34px;
-            margin-bottom: 7px;
-        }
-
-        .device-card strong {
-            display: block;
-        }
-
-        /* =========================
-           FORM
-        ========================= */
-
-        .form-group {
-            margin-bottom: 22px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 700;
-            font-size: 14px;
-        }
-
-        .required {
-            color: var(--danger);
-        }
-
-        textarea,
-        select {
-            width: 100%;
-
-            border: 1px solid var(--border);
-            border-radius: 12px;
-
-            padding: 13px 14px;
-
-            outline: none;
-            background: white;
-            color: var(--text);
-
-            transition:
-                border-color 0.2s ease,
-                box-shadow 0.2s ease;
-        }
-
-        textarea {
-            min-height: 125px;
-            resize: vertical;
-        }
-
-        textarea:focus,
-        select:focus {
-            border-color: var(--primary);
-            box-shadow:
-                0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-
-        .helper-text {
-            color: var(--muted);
-            font-size: 12px;
-            margin-top: 6px;
-        }
-
-        /* =========================
-           BUTTONS
-        ========================= */
-
-        .button-row {
-            display: flex;
-            justify-content: space-between;
-            gap: 15px;
-            margin-top: 30px;
-        }
-
-        .btn {
             border: none;
-            border-radius: 12px;
-
-            padding: 13px 22px;
-
-            font-weight: 700;
-            font-size: 14px;
-
-            transition:
-                transform 0.2s ease,
-                box-shadow 0.2s ease,
-                background 0.2s ease;
-        }
-
-        .btn:hover {
-            transform: translateY(-1px);
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-
-            box-shadow:
-                0 7px 18px rgba(37, 99, 235, 0.22);
-        }
-
-        .btn-primary:hover {
-            background: var(--primary-dark);
-        }
-
-        .btn-secondary {
-            background: #eef2f7;
-            color: #374151;
-        }
-
-        .btn-secondary:hover {
-            background: #e5e7eb;
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
             box-shadow: none;
         }
 
-        /* =========================
-           LOADING
-        ========================= */
+        .screen {
+            padding: 0;
+        }
+    }
 
-        .loading {
-            text-align: center;
-            padding: 40px 20px;
+    @media (max-width: 800px) {
+        .navbar {
+            padding: 12px 4%;
         }
 
-        .spinner {
-            width: 50px;
-            height: 50px;
-
-            border: 5px solid #dbeafe;
-            border-top-color: var(--primary);
-
-            border-radius: 50%;
-
-            margin: 0 auto 18px;
-
-            animation: spin 0.8s linear infinite;
+        .nav-text {
+            display: none;
         }
 
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
+        .container {
+            padding: 30px 0;
         }
 
-        /* =========================
-           DIAGNOSIS
-        ========================= */
-
-        .diagnosis-header {
-            text-align: center;
-            padding: 15px 0 30px;
+        .screen {
+            padding: 28px 20px;
         }
 
-        .diagnosis-icon {
-            width: 70px;
-            height: 70px;
-
-            margin: 0 auto 15px;
-
-            background: #dcfce7;
-            color: var(--success);
-
-            border-radius: 50%;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            font-size: 35px;
-        }
-
-        .diagnosis-header h2 {
-            font-size: 28px;
-            margin-bottom: 7px;
-        }
-
-        .diagnosis-header p {
-            color: var(--muted);
+        .option-grid,
+        .device-grid {
+            grid-template-columns: repeat(2, 1fr);
         }
 
         .result-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 520px) {
+        .brand-name {
+            font-size: 23px;
         }
 
-        .result-box {
-            background: #f8fafc;
-            border: 1px solid var(--border);
-            border-radius: 15px;
-            padding: 22px;
+        .brand-icon {
+            width: 37px;
+            height: 37px;
         }
 
-        .result-box h3 {
-            font-size: 16px;
-            margin-bottom: 12px;
+        .hero h1 {
+            font-size: 34px;
         }
 
-        .result-box ul,
-        .result-box ol {
-            padding-left: 20px;
+        .hero p {
+            font-size: 15px;
         }
 
-        .result-box li {
-            margin-bottom: 8px;
-            color: #4b5563;
+        .screen-title {
+            font-size: 23px;
         }
 
-        .severity {
-            display: inline-block;
-
-            padding: 5px 11px;
-
-            border-radius: 999px;
-
-            font-size: 12px;
-            font-weight: 800;
-
-            margin-top: 8px;
+        .option-grid,
+        .device-grid {
+            grid-template-columns: 1fr;
         }
 
-        .severity-low {
-            background: #dcfce7;
-            color: #166534;
+        .button-row {
+            flex-direction: column;
         }
 
-        .severity-medium {
-            background: #fef3c7;
-            color: #92400e;
+        .btn {
+            width: 100%;
         }
 
-        .severity-high {
-            background: #fee2e2;
-            color: #991b1b;
+        .progress-step {
+            font-size: 11px;
         }
 
-        /* =========================
-           FOOTER
-        ========================= */
-
-        footer {
-            text-align: center;
-            padding: 30px 20px;
-            color: var(--muted);
-            font-size: 13px;
+        .progress-number {
+            width: 34px;
+            height: 34px;
         }
+    }
+</style>
+```
 
-        footer button {
-            background: none;
-            border: none;
-            color: var(--primary);
-            font-weight: 700;
-            margin: 0 7px;
-        }
-
-        /* =========================
-           MODALS
-        ========================= */
-
-        .modal {
-            position: fixed;
-            inset: 0;
-
-            background: rgba(15, 23, 42, 0.65);
-
-            display: none;
-            align-items: center;
-            justify-content: center;
-
-            padding: 20px;
-
-            z-index: 1000;
-        }
-
-        .modal.show {
-            display: flex;
-        }
-
-        .modal-content {
-            width: min(600px, 100%);
-            background: white;
-
-            border-radius: 20px;
-            padding: 30px;
-
-            position: relative;
-
-            max-height: 85vh;
-            overflow-y: auto;
-
-            animation: modalIn 0.25s ease;
-        }
-
-        @keyframes modalIn {
-            from {
-                opacity: 0;
-                transform: scale(0.96);
-            }
-
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        .modal-content h2 {
-            margin-bottom: 15px;
-        }
-
-        .modal-content p {
-            color: #4b5563;
-            margin-bottom: 14px;
-        }
-
-        .close-modal {
-            position: absolute;
-            top: 14px;
-            right: 16px;
-
-            width: 35px;
-            height: 35px;
-
-            border: none;
-            border-radius: 50%;
-
-            background: #f3f4f6;
-
-            font-size: 20px;
-        }
-
-        /* =========================
-           PRINT
-        ========================= */
-
-        @media print {
-
-            .navbar,
-            footer,
-            .progress-container,
-            .button-row {
-                display: none !important;
-            }
-
-            body {
-                background: white;
-            }
-
-            .container {
-                width: 100%;
-                padding: 0;
-            }
-
-            .card {
-                border: none;
-                box-shadow: none;
-            }
-
-            .screen {
-                padding: 0;
-            }
-        }
-
-        /* =========================
-           RESPONSIVE
-        ========================= */
-
-        @media (max-width: 800px) {
-
-            .navbar {
-                padding: 12px 4%;
-            }
-
-            .nav-text {
-                display: none;
-            }
-
-            .container {
-                padding: 30px 0;
-            }
-
-            .screen {
-                padding: 28px 20px;
-            }
-
-            .option-grid,
-            .device-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .result-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 520px) {
-
-            .brand-name {
-                font-size: 23px;
-            }
-
-            .brand-icon {
-                width: 37px;
-                height: 37px;
-            }
-
-            .hero h1 {
-                font-size: 34px;
-            }
-
-            .hero p {
-                font-size: 15px;
-            }
-
-            .screen-title {
-                font-size: 23px;
-            }
-
-            .option-grid,
-            .device-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .button-row {
-                flex-direction: column;
-            }
-
-            .btn {
-                width: 100%;
-            }
-
-            .progress-step {
-                font-size: 11px;
-            }
-
-            .progress-number {
-                width: 34px;
-                height: 34px;
-            }
-        }
-    </style>
 </head>
 
 <body>
 
-    <!-- =========================
-         NAVBAR
-    ========================= -->
+<header class="navbar">
 
-    <header class="navbar">
+```
+<div class="brand">
 
-        <div class="brand">
+    <div class="brand-icon">
 
-            <div class="brand-icon">
+        <svg viewBox="0 0 64 64" aria-hidden="true">
 
-                <svg viewBox="0 0 64 64" aria-hidden="true">
+            <rect
+                x="4"
+                y="4"
+                width="56"
+                height="56"
+                rx="16"
+                fill="#2563eb">
+            </rect>
 
-                    <rect
-                        x="4"
-                        y="4"
-                        width="56"
-                        height="56"
-                        rx="16"
-                        fill="#2563eb">
-                    </rect>
+            <path
+                d="M39.5 14.5
+                C35.5 12.8 30.7 13.5 27.6 16.6
+                C24.3 19.9 23.8 25.1 26.2 29
+                L14.8 40.4
+                C13.1 42.1 13.1 44.9 14.8 46.6
+                C16.5 48.3 19.3 48.3 21 46.6
+                L32.4 35.2
+                C36.3 37.6 41.5 37.1 44.8 33.8
+                C47.9 30.7 48.6 25.9 46.9 21.9
+                L40.7 28.1
+                L35.2 27
+                L34.1 21.5
+                Z"
+                fill="white">
+            </path>
 
-                    <path
-                        d="M39.5 14.5
-                           C35.5 12.8 30.7 13.5 27.6 16.6
-                           C24.3 19.9 23.8 25.1 26.2 29
-                           L14.8 40.4
-                           C13.1 42.1 13.1 44.9 14.8 46.6
-                           C16.5 48.3 19.3 48.3 21 46.6
-                           L32.4 35.2
-                           C36.3 37.6 41.5 37.1 44.8 33.8
-                           C47.9 30.7 48.6 25.9 46.9 21.9
-                           L40.7 28.1
-                           L35.2 27
-                           L34.1 21.5
-                           Z"
-                        fill="white">
-                    </path>
+            <path
+                d="M30 42 L34.5 46.5 L49 32"
+                fill="none"
+                stroke="#60a5fa"
+                stroke-width="4"
+                stroke-linecap="round"
+                stroke-linejoin="round">
+            </path>
 
-                    <path
-                        d="M30 42 L34.5 46.5 L49 32"
-                        fill="none"
-                        stroke="#60a5fa"
-                        stroke-width="4"
-                        stroke-linecap="round"
-                        stroke-linejoin="round">
-                    </path>
+        </svg>
 
-                </svg>
+    </div>
 
+    <div class="brand-name">
+        Fix<span>It</span>
+    </div>
+
+</div>
+
+<div class="nav-text">
+    Intelligent Troubleshooting Platform
+</div>
+```
+
+</header>
+
+<main class="container">
+
+```
+<section class="hero">
+
+    <h1>
+        Diagnose. <span>Understand.</span> Fix.
+    </h1>
+
+    <p>
+        FixIt helps you identify common device problems
+        and provides simple step-by-step solutions.
+    </p>
+
+</section>
+
+
+<div class="progress-container">
+
+    <div class="progress-line">
+
+        <div
+            class="progress-active"
+            id="progressActive">
+        </div>
+
+    </div>
+
+    <div class="progress-steps">
+
+        <div
+            class="progress-step active"
+            id="progressStep1">
+
+            <div class="progress-number">
+                1
             </div>
 
-            <div class="brand-name">
-                Fix<span>It</span>
+            <span>Power</span>
+
+        </div>
+
+        <div
+            class="progress-step"
+            id="progressStep2">
+
+            <div class="progress-number">
+                2
             </div>
 
+            <span>Problem</span>
+
         </div>
 
-        <div class="nav-text">
-            Intelligent Troubleshooting Platform
-        </div>
+        <div
+            class="progress-step"
+            id="progressStep3">
 
-    </header>
-
-
-    <!-- =========================
-         MAIN
-    ========================= -->
-
-    <main class="container">
-
-        <section class="hero">
-
-            <h1>
-                Diagnose. <span>Understand.</span> Fix.
-            </h1>
-
-            <p>
-                FixIt helps you identify common device problems
-                and provides simple step-by-step solutions.
-            </p>
-
-        </section>
-
-
-        <!-- PROGRESS -->
-
-        <div class="progress-container">
-
-            <div class="progress-line">
-
-                <div
-                    class="progress-active"
-                    id="progressActive">
-                </div>
-
+            <div class="progress-number">
+                3
             </div>
 
-            <div class="progress-steps">
-
-                <div
-                    class="progress-step active"
-                    id="progressStep1">
-
-                    <div class="progress-number">
-                        1
-                    </div>
-
-                    <span>Power</span>
-
-                </div>
-
-
-                <div
-                    class="progress-step"
-                    id="progressStep2">
-
-                    <div class="progress-number">
-                        2
-                    </div>
-
-                    <span>Problem</span>
-
-                </div>
-
-
-                <div
-                    class="progress-step"
-                    id="progressStep3">
-
-                    <div class="progress-number">
-                        3
-                    </div>
-
-                    <span>Diagnosis</span>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <div class="card">
-
-            <!-- =========================
-                 SCREEN 1
-            ========================= -->
-
-            <section
-                id="screen1"
-                class="screen active">
-
-                <h2 class="screen-title">
-                    Does your device turn on?
-                </h2>
-
-                <p class="screen-subtitle">
-                    Select the option that best describes your device.
-                </p>
-
-
-                <div class="option-grid">
-
-                    <button
-                        type="button"
-                        class="option-card"
-                        onclick="selectPowerState(this,'yes','Yes')">
-
-                        <div class="option-icon">
-                            🟢
-                        </div>
-
-                        <h3>Yes</h3>
-
-                        <p>
-                            The device powers on normally.
-                        </p>
-
-                    </button>
-
-
-                    <button
-                        type="button"
-                        class="option-card"
-                        onclick="selectPowerState(this,'no','No')">
-
-                        <div class="option-icon">
-                            🔴
-                        </div>
-
-                        <h3>No</h3>
-
-                        <p>
-                            The device does not turn on.
-                        </p>
-
-                    </button>
-
-
-                    <button
-                        type="button"
-                        class="option-card"
-                        onclick="selectPowerState(this,'unknown','Not Sure')">
-
-                        <div class="option-icon">
-                            🟡
-                        </div>
-
-                        <h3>Not Sure</h3>
-
-                        <p>
-                            I am not sure about the power status.
-                        </p>
-
-                    </button>
-
-                </div>
-
-
-                <div class="button-row">
-
-                    <div></div>
-
-                    <button
-                        type="button"
-                        class="btn btn-primary"
-                        id="powerNextButton"
-                        onclick="goToScreen2()"
-                        disabled>
-
-                        Continue →
-
-                    </button>
-
-                </div>
-
-            </section>
-
-
-            <!-- =========================
-                 SCREEN 2
-            ========================= -->
-
-            <section
-                id="screen2"
-                class="screen">
-
-                <h2 class="screen-title">
-                    Tell us about the problem
-                </h2>
-
-                <p class="screen-subtitle">
-                    Give FixIt a few details so it can identify
-                    the most likely cause.
-                </p>
-
-
-                <div class="form-group">
-
-                    <label>
-                        Select your device
-                        <span class="required">*</span>
-                    </label>
-
-
-                    <div class="device-grid">
-
-                        <button
-                            type="button"
-                            class="device-card"
-                            onclick="selectDevice(this,'phone')">
-
-                            <div class="device-icon">
-                                📱
-                            </div>
-
-                            <strong>Phone</strong>
-
-                        </button>
-
-
-                        <button
-                            type="button"
-                            class="device-card"
-                            onclick="selectDevice(this,'laptop')">
-
-                            <div class="device-icon">
-                                💻
-                            </div>
-
-                            <strong>Laptop</strong>
-
-                        </button>
-
-
-                        <button
-                            type="button"
-                            class="device-card"
-                            onclick="selectDevice(this,'desktop')">
-
-                            <div class="device-icon">
-                                🖥️
-                            </div>
-
-                            <strong>Desktop</strong>
-
-                        </button>
-
-
-                        <button
-                            type="button"
-                            class="device-card"
-                            onclick="selectDevice(this,'tablet')">
-
-                            <div class="device-icon">
-                                📲
-                            </div>
-
-                            <strong>Tablet</strong>
-
-                        </button>
-
-
-                        <button
-                            type="button"
-                            class="device-card"
-                            onclick="selectDevice(this,'tv')">
-
-                            <div class="device-icon">
-                                📺
-                            </div>
-
-                            <strong>TV</strong>
-
-                        </button>
-
-
-                        <button
-                            type="button"
-                            class="device-card"
-                            onclick="selectDevice(this,'wifi')">
-
-                            <div class="device-icon">
-                                📡
-                            </div>
-
-                            <strong>Wi-Fi</strong>
-
-                        </button>
-
-                    </div>
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label for="problemDescription">
-
-                        What problem are you experiencing?
-
-                        <span class="required">*</span>
-
-                    </label>
-
-                    <textarea
-                        id="problemDescription"
-                        maxlength="1000"
-                        placeholder="Example: My Wi-Fi is extremely slow and videos keep buffering.">
-                    </textarea>
-
-                    <div class="helper-text">
-                        Describe the problem in your own words.
-                    </div>
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label for="whenStarted">
-                        When did the problem start?
-                    </label>
-
-                    <select id="whenStarted">
-
-                        <option value="">
-                            Select an option
-                        </option>
-
-                        <option value="today">
-                            Today
-                        </option>
-
-                        <option value="few-days">
-                            A few days ago
-                        </option>
-
-                        <option value="week">
-                            About a week ago
-                        </option>
-
-                        <option value="long-time">
-                            More than a month ago
-                        </option>
-
-                        <option value="suddenly">
-                            Suddenly
-                        </option>
-
-                    </select>
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label for="whatHappened">
-                        What happened before the problem?
-                    </label>
-
-                    <select id="whatHappened">
-
-                        <option value="">
-                            Select an option
-                        </option>
-
-                        <option value="nothing">
-                            Nothing unusual
-                        </option>
-
-                        <option value="drop">
-                            Device was dropped
-                        </option>
-
-                        <option value="water">
-                            Device got wet
-                        </option>
-
-                        <option value="update">
-                            Software update
-                        </option>
-
-                        <option value="new-app">
-                            Installed a new application
-                        </option>
-
-                        <option value="charging">
-                            Charging or power issue
-                        </option>
-
-                        <option value="overheating">
-                            Device became hot
-                        </option>
-
-                    </select>
-
-                </div>
-
-
-                <div class="button-row">
-
-                    <button
-                        type="button"
-                        class="btn btn-secondary"
-                        onclick="showScreen(1)">
-
-                        ← Back
-
-                    </button>
-
-
-                    <button
-                        type="button"
-                        class="btn btn-primary"
-                        onclick="startDiagnosis()">
-
-                        Diagnose Problem →
-
-                    </button>
-
-                </div>
-
-            </section>
-
-
-            <!-- =========================
-                 SCREEN 3
-            ========================= -->
-
-            <section
-                id="screen3"
-                class="screen">
-
-                <div id="diagnosisContent"></div>
-
-            </section>
-
-        </div>
-
-    </main>
-
-
-    <!-- =========================
-         FOOTER
-    ========================= -->
-
-    <footer>
-
-        <div>
-            © 2026 FixIt - Intelligent Troubleshooting Platform
-        </div>
-
-        <div style="margin-top:8px;">
-
-            <button onclick="showSafety()">
-                Safety
-            </button>
-
-            |
-
-            <button onclick="showAbout()">
-                About
-            </button>
-
-        </div>
-
-    </footer>
-
-
-    <!-- =========================
-         SAFETY MODAL
-    ========================= -->
-
-    <div
-        class="modal"
-        id="safetyModal">
-
-        <div class="modal-content">
-
-            <button
-                class="close-modal"
-                onclick="closeModal('safetyModal')">
-
-                ×
-
-            </button>
-
-            <h2>
-                ⚠️ Safety Information
-            </h2>
-
-            <p>
-                FixIt provides general troubleshooting guidance
-                for common technology problems.
-            </p>
-
-            <p>
-                If a device is smoking, producing a burning smell,
-                overheating severely, or showing signs of electrical
-                damage, stop using it and seek help from a qualified
-                technician.
-            </p>
-
-            <p>
-                Do not open electrical devices unless you have the
-                required knowledge and equipment.
-            </p>
+            <span>Diagnosis</span>
 
         </div>
 
     </div>
 
+</div>
 
-    <!-- =========================
-         ABOUT MODAL
-    ========================= -->
 
-    <div
-        class="modal"
-        id="aboutModal">
+<div class="card">
 
-        <div class="modal-content">
+    <!-- SCREEN 1 -->
+
+    <section
+        id="screen1"
+        class="screen active">
+
+        <h2 class="screen-title">
+            Does your device turn on?
+        </h2>
+
+        <p class="screen-subtitle">
+            Select the option that best describes your device.
+        </p>
+
+
+        <div class="option-grid">
 
             <button
-                class="close-modal"
-                onclick="closeModal('aboutModal')">
+                type="button"
+                class="option-card"
+                onclick="selectPowerState(this,'yes','Yes')">
 
-                ×
+                <div class="option-icon">
+                    ✓
+                </div>
+
+                <h3>
+                    Yes
+                </h3>
+
+                <p>
+                    The device powers on normally.
+                </p>
 
             </button>
 
-            <h2>
-                🔧 About FixIt
-            </h2>
 
-            <p>
-                FixIt is an intelligent troubleshooting platform
-                designed to help users understand common technology
-                problems.
-            </p>
+            <button
+                type="button"
+                class="option-card"
+                onclick="selectPowerState(this,'no','No')">
 
-            <p>
-                Users provide information about their device and
-                symptoms, and FixIt analyzes the information to
-                provide possible causes and recommended solutions.
-            </p>
+                <div class="option-icon">
+                    ✕
+                </div>
 
-            <p>
-                The platform is designed to make technical
-                troubleshooting simpler and easier to understand.
-            </p>
+                <h3>
+                    No
+                </h3>
+
+                <p>
+                    The device does not turn on.
+                </p>
+
+            </button>
+
+
+            <button
+                type="button"
+                class="option-card"
+                onclick="selectPowerState(this,'unknown','Not Sure')">
+
+                <div class="option-icon">
+                    ?
+                </div>
+
+                <h3>
+                    Not Sure
+                </h3>
+
+                <p>
+                    I am not sure about the power status.
+                </p>
+
+            </button>
 
         </div>
 
-    </div>
+
+        <div class="button-row">
+
+            <div></div>
+
+            <button
+                type="button"
+                class="btn btn-primary"
+                id="powerNextButton"
+                onclick="goToScreen2()"
+                disabled>
+
+                Continue →
+
+            </button>
+
+        </div>
+
+    </section>
 
 
-    <script>
+    <!-- SCREEN 2 -->
 
-        /* ==========================================
-           GOOGLE APPS SCRIPT
-        ========================================== */
+    <section
+        id="screen2"
+        class="screen">
 
-        const APPSCRIPT_URL =
-            "https://script.google.com/macros/s/YOUR_APPS_SCRIPT_ID/exec";
+        <h2 class="screen-title">
+            Tell us about the problem
+        </h2>
 
-
-        /* ==========================================
-           APPLICATION STATE
-        ========================================== */
-
-        const appState = {
-            currentScreen: 1,
-            powerState: null,
-            powerLabel: "",
-            device: null,
-            problemDescription: "",
-            whenStarted: "",
-            whatHappened: "",
-            diagnosis: null
-        };
+        <p class="screen-subtitle">
+            Give FixIt a few details so it can identify
+            the most likely cause.
+        </p>
 
 
-        /* ==========================================
-           SCREEN NAVIGATION
-        ========================================== */
+        <!-- DEVICE -->
 
-        function showScreen(screenNumber) {
+        <div class="form-group">
 
-            document
-                .querySelectorAll(".screen")
-                .forEach(function(screen) {
-
-                    screen.classList.remove("active");
-
-                });
+            <label>
+                Select your device
+                <span class="required">*</span>
+            </label>
 
 
-            const screen =
-                document.getElementById(
-                    "screen" + screenNumber
-                );
+            <div class="device-grid">
+
+                <button
+                    type="button"
+                    class="device-card"
+                    onclick="selectDevice(this,'phone')">
+
+                    <div class="device-icon">
+                        📱
+                    </div>
+
+                    <strong>
+                        Phone
+                    </strong>
+
+                </button>
 
 
-            if (screen) {
-                screen.classList.add("active");
-            }
+                <button
+                    type="button"
+                    class="device-card"
+                    onclick="selectDevice(this,'laptop')">
+
+                    <div class="device-icon">
+                        💻
+                    </div>
+
+                    <strong>
+                        Laptop
+                    </strong>
+
+                </button>
 
 
-            appState.currentScreen =
-                screenNumber;
+                <button
+                    type="button"
+                    class="device-card"
+                    onclick="selectDevice(this,'desktop')">
+
+                    <div class="device-icon">
+                        🖥️
+                    </div>
+
+                    <strong>
+                        Desktop
+                    </strong>
+
+                </button>
 
 
-            updateProgress(screenNumber);
+                <button
+                    type="button"
+                    class="device-card"
+                    onclick="selectDevice(this,'tablet')">
 
-            window.scrollTo({
-                top: 0,
-                behavior: "smooth"
+                    <div class="device-icon">
+                        📲
+                    </div>
+
+                    <strong>
+                        Tablet
+                    </strong>
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="device-card"
+                    onclick="selectDevice(this,'tv')">
+
+                    <div class="device-icon">
+                        📺
+                    </div>
+
+                    <strong>
+                        TV
+                    </strong>
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="device-card"
+                    onclick="selectDevice(this,'wifi')">
+
+                    <div class="device-icon">
+                        📡
+                    </div>
+
+                    <strong>
+                        Wi-Fi
+                    </strong>
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- PROBLEM -->
+
+        <div class="form-group">
+
+            <label for="problemDescription">
+                What problem are you experiencing?
+                <span class="required">*</span>
+            </label>
+
+
+            <textarea
+                id="problemDescription"
+                maxlength="1000"
+                placeholder="Example: My Wi-Fi is extremely slow and videos keep buffering."
+                spellcheck="true"></textarea>
+
+
+            <div class="helper-text">
+                Describe the problem in your own words.
+            </div>
+
+        </div>
+
+
+        <!-- WHEN STARTED -->
+
+        <div class="form-group">
+
+            <label for="whenStarted">
+                When did the problem start?
+            </label>
+
+
+            <select id="whenStarted">
+
+                <option value="">
+                    Select an option
+                </option>
+
+                <option value="recently">
+                    Recently
+                </option>
+
+                <option value="today">
+                    Today
+                </option>
+
+                <option value="few-days">
+                    A few days ago
+                </option>
+
+                <option value="week">
+                    About a week ago
+                </option>
+
+                <option value="long-time">
+                    More than a month ago
+                </option>
+
+                <option value="suddenly">
+                    Suddenly
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- WHAT HAPPENED -->
+
+        <div class="form-group">
+
+            <label for="whatHappened">
+                What happened before the problem?
+            </label>
+
+
+            <textarea
+                id="whatHappened"
+                maxlength="1000"
+                placeholder="Tell us what happened before the problem started. Example: I installed a new app, the device fell down, or nothing unusual happened."
+                spellcheck="true"></textarea>
+
+
+            <div class="helper-text">
+                Type anything that happened before the problem.
+            </div>
+
+        </div>
+
+
+        <div class="button-row">
+
+            <button
+                type="button"
+                class="btn btn-secondary"
+                onclick="showScreen(1)">
+
+                ← Back
+
+            </button>
+
+
+            <button
+                type="button"
+                class="btn btn-primary"
+                onclick="startDiagnosis()">
+
+                Diagnose Problem →
+
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- SCREEN 3 -->
+
+    <section
+        id="screen3"
+        class="screen">
+
+        <div id="diagnosisContent"></div>
+
+    </section>
+
+</div>
+```
+
+</main>
+
+<footer>
+
+```
+<div>
+    © 2026 FixIt - Intelligent Troubleshooting Platform
+</div>
+
+<div style="margin-top:8px;">
+
+    <button onclick="showSafety()">
+        Safety
+    </button>
+
+    |
+
+    <button onclick="showAbout()">
+        About
+    </button>
+
+</div>
+```
+
+</footer>
+
+<!-- SAFETY MODAL -->
+
+<div
+    class="modal"
+    id="safetyModal">
+
+```
+<div class="modal-content">
+
+    <button
+        class="close-modal"
+        onclick="closeModal('safetyModal')">
+
+        ×
+
+    </button>
+
+    <h2>
+        ⚠️ Safety Information
+    </h2>
+
+    <p>
+        FixIt provides general troubleshooting guidance
+        for common technology problems.
+    </p>
+
+    <p>
+        If a device is smoking, producing a burning smell,
+        overheating severely, or showing signs of electrical
+        damage, stop using it and seek help from a qualified
+        technician.
+    </p>
+
+    <p>
+        Do not open electrical devices unless you have the
+        required knowledge and equipment.
+    </p>
+
+</div>
+```
+
+</div>
+
+<!-- ABOUT MODAL -->
+
+<div
+    class="modal"
+    id="aboutModal">
+
+```
+<div class="modal-content">
+
+    <button
+        class="close-modal"
+        onclick="closeModal('aboutModal')">
+
+        ×
+
+    </button>
+
+    <h2>
+        🔧 About FixIt
+    </h2>
+
+    <p>
+        FixIt is an intelligent troubleshooting platform
+        designed to help users understand common technology
+        problems.
+    </p>
+
+    <p>
+        Users provide information about their device and
+        symptoms, and FixIt analyzes the information to
+        provide possible causes and recommended solutions.
+    </p>
+
+    <p>
+        The platform is designed to make technical
+        troubleshooting simpler and easier to understand.
+    </p>
+
+</div>
+```
+
+</div>
+
+<script>
+
+    const APPSCRIPT_URL =
+        "https://script.google.com/macros/s/YOUR_APPS_SCRIPT_ID/exec";
+
+
+    const appState = {
+        currentScreen: 1,
+        powerState: null,
+        powerLabel: "",
+        device: null,
+        problemDescription: "",
+        whenStarted: "",
+        whatHappened: "",
+        diagnosis: null
+    };
+
+
+    function showScreen(screenNumber) {
+
+        document
+            .querySelectorAll(".screen")
+            .forEach(function(screen) {
+
+                screen.classList.remove("active");
+
             });
 
+
+        const screen =
+            document.getElementById(
+                "screen" + screenNumber
+            );
+
+
+        if (screen) {
+            screen.classList.add("active");
         }
 
 
-        /* ==========================================
-           PROGRESS
-        ========================================== */
-
-        function updateProgress(screenNumber) {
-
-            const progress =
-                document.getElementById(
-                    "progressActive"
-                );
+        appState.currentScreen =
+            screenNumber;
 
 
-            const step1 =
-                document.getElementById(
-                    "progressStep1"
-                );
-
-            const step2 =
-                document.getElementById(
-                    "progressStep2"
-                );
-
-            const step3 =
-                document.getElementById(
-                    "progressStep3"
-                );
+        updateProgress(screenNumber);
 
 
-            step1.classList.remove("active");
-            step2.classList.remove("active");
-            step3.classList.remove("active");
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+    }
 
 
-            if (screenNumber === 1) {
+    function updateProgress(screenNumber) {
 
-                progress.style.width = "0%";
+        const progress =
+            document.getElementById(
+                "progressActive"
+            );
 
-                step1.classList.add("active");
+        const step1 =
+            document.getElementById(
+                "progressStep1"
+            );
 
-            } else if (screenNumber === 2) {
+        const step2 =
+            document.getElementById(
+                "progressStep2"
+            );
 
-                progress.style.width = "50%";
+        const step3 =
+            document.getElementById(
+                "progressStep3"
+            );
 
-                step1.classList.add("active");
-                step2.classList.add("active");
 
-            } else {
+        step1.classList.remove("active");
+        step2.classList.remove("active");
+        step3.classList.remove("active");
 
-                progress.style.width = "100%";
 
-                step1.classList.add("active");
-                step2.classList.add("active");
-                step3.classList.add("active");
+        if (screenNumber === 1) {
+
+            progress.style.width = "0%";
+
+            step1.classList.add("active");
+
+        } else if (screenNumber === 2) {
+
+            progress.style.width = "50%";
+
+            step1.classList.add("active");
+            step2.classList.add("active");
+
+        } else {
+
+            progress.style.width = "100%";
+
+            step1.classList.add("active");
+            step2.classList.add("active");
+            step3.classList.add("active");
+
+        }
+
+    }
+
+
+    function selectPowerState(
+        button,
+        key,
+        label
+    ) {
+
+        document
+            .querySelectorAll(
+                "#screen1 .option-card"
+            )
+            .forEach(function(card) {
+
+                card.classList.remove("selected");
+
+            });
+
+
+        button.classList.add("selected");
+
+
+        appState.powerState = key;
+        appState.powerLabel = label;
+
+
+        document
+            .getElementById(
+                "powerNextButton"
+            )
+            .disabled = false;
+
+    }
+
+
+    function goToScreen2() {
+
+        if (!appState.powerState) {
+
+            alert(
+                "Please select the power status first."
+            );
+
+            return;
+        }
+
+
+        showScreen(2);
+
+    }
+
+
+    function selectDevice(
+        button,
+        device
+    ) {
+
+        document
+            .querySelectorAll(".device-card")
+            .forEach(function(card) {
+
+                card.classList.remove("selected");
+
+            });
+
+
+        button.classList.add("selected");
+
+        appState.device = device;
+
+    }
+
+
+    /*
+     * DIAGNOSIS RULES
+     */
+
+    const diagnosisRules = {
+
+        phone: [
+
+            {
+                keywords: [
+                    "battery",
+                    "battery problem",
+                    "battery issue",
+                    "battery drain",
+                    "battery draining",
+                    "drains fast",
+                    "draining fast",
+                    "charge",
+                    "charging",
+                    "charger",
+                    "charging problem",
+                    "charging issue",
+                    "slow charge",
+                    "slow charging",
+                    "very slow charging",
+                    "extremely slow charging",
+                    "charging slowly",
+                    "not charging",
+                    "doesn't charge",
+                    "doesnt charge",
+                    "wont charge",
+                    "won't charge",
+                    "charge not working"
+                ],
+
+                title: "Charging or Battery Issue",
+
+                severity: "medium",
+
+                causes: [
+                    "Damaged or unsuitable charging cable",
+                    "Dust or debris in the charging port",
+                    "Battery health may have decreased",
+                    "Background applications may be consuming power"
+                ],
+
+                solutions: [
+                    "Try a different compatible charging cable",
+                    "Check the charging port for visible debris",
+                    "Close unnecessary background applications",
+                    "Try charging from a different power source",
+                    "If the problem continues, have the battery and charging port checked"
+                ]
+            },
+
+
+            {
+                keywords: [
+                    "hot",
+                    "too hot",
+                    "very hot",
+                    "extremely hot",
+                    "heating",
+                    "heating up",
+                    "heats up",
+                    "overheating",
+                    "overheat",
+                    "temperature",
+                    "high temperature",
+                    "gets hot",
+                    "becomes hot",
+                    "phone gets hot"
+                ],
+
+                title: "Phone Overheating",
+
+                severity: "high",
+
+                causes: [
+                    "Too many applications may be running",
+                    "Heavy applications can increase processor usage",
+                    "Charging while using demanding applications can produce heat",
+                    "Poor ventilation may contribute to heating"
+                ],
+
+                solutions: [
+                    "Close applications you are not using",
+                    "Move the phone to a cool and ventilated place",
+                    "Avoid heavy usage while charging",
+                    "Restart the device",
+                    "If overheating continues, seek professional inspection"
+                ]
+            },
+
+
+            {
+                keywords: [
+                    "slow",
+                    "very slow",
+                    "extremely slow",
+                    "too slow",
+                    "super slow",
+                    "really slow",
+                    "incredibly slow",
+                    "terribly slow",
+                    "sluggish",
+                    "lag",
+                    "lagging",
+                    "lags",
+                    "freeze",
+                    "freezing",
+                    "hang",
+                    "hanging",
+                    "stuck",
+                    "not responding",
+                    "unresponsive",
+                    "performance problem",
+                    "performance issue",
+                    "phone slow",
+                    "phone is slow"
+                ],
+
+                title: "Performance or Software Issue",
+
+                severity: "medium",
+
+                causes: [
+                    "Low available storage",
+                    "Too many background applications",
+                    "Outdated software",
+                    "A problematic application"
+                ],
+
+                solutions: [
+                    "Free up unnecessary storage",
+                    "Close unused applications",
+                    "Restart the device",
+                    "Update the operating system",
+                    "Remove recently installed problematic applications"
+                ]
+            },
+
+
+            {
+                keywords: [
+                    "screen",
+                    "display",
+                    "black screen",
+                    "blank screen",
+                    "screen black",
+                    "screen blank",
+                    "touch",
+                    "touchscreen",
+                    "touch not working",
+                    "touch not responding",
+                    "cracked screen",
+                    "screen cracked",
+                    "display not working",
+                    "screen not working"
+                ],
+
+                title: "Display or Touchscreen Issue",
+
+                severity: "medium",
+
+                causes: [
+                    "Temporary software problem",
+                    "Physical screen damage",
+                    "Touchscreen hardware issue",
+                    "Loose internal connection"
+                ],
+
+                solutions: [
+                    "Restart the device",
+                    "Clean and dry the screen",
+                    "Check for visible physical damage",
+                    "Remove accessories that may interfere with the screen",
+                    "If the issue remains, seek professional inspection"
+                ]
+            }
+
+        ],
+
+
+        laptop: [
+
+            {
+                keywords: [
+                    "battery",
+                    "battery problem",
+                    "battery issue",
+                    "battery draining",
+                    "battery drain",
+                    "charge",
+                    "charging",
+                    "charger",
+                    "charging problem",
+                    "charging issue",
+                    "slow charge",
+                    "slow charging",
+                    "very slow charging",
+                    "extremely slow charging",
+                    "not charging",
+                    "doesn't charge",
+                    "doesnt charge",
+                    "wont charge",
+                    "won't charge"
+                ],
+
+                title: "Laptop Power or Charging Issue",
+
+                severity: "medium",
+
+                causes: [
+                    "Faulty charger or cable",
+                    "Battery health issue",
+                    "Charging port problem",
+                    "Power management problem"
+                ],
+
+                solutions: [
+                    "Check that the charger is properly connected",
+                    "Try another compatible power outlet",
+                    "Check the charging cable for visible damage",
+                    "Restart the laptop",
+                    "Have the charger, port and battery inspected if the problem continues"
+                ]
+            },
+
+
+            {
+                keywords: [
+                    "slow",
+                    "very slow",
+                    "extremely slow",
+                    "too slow",
+                    "super slow",
+                    "really slow",
+                    "incredibly slow",
+                    "sluggish",
+                    "lag",
+                    "lagging",
+                    "freeze",
+                    "freezing",
+                    "hang",
+                    "hanging",
+                    "stuck",
+                    "not responding",
+                    "unresponsive",
+                    "performance issue",
+                    "performance problem",
+                    "laptop slow",
+                    "laptop is slow"
+                ],
+
+                title: "Laptop Performance Issue",
+
+                severity: "medium",
+
+                causes: [
+                    "Too many applications running",
+                    "Low storage space",
+                    "High memory usage",
+                    "Background processes",
+                    "Outdated drivers or software"
+                ],
+
+                solutions: [
+                    "Close unnecessary applications",
+                    "Restart the laptop",
+                    "Free up storage space",
+                    "Check which applications are using high memory",
+                    "Update the operating system and drivers"
+                ]
+            },
+
+
+            {
+                keywords: [
+                    "black screen",
+                    "blank screen",
+                    "screen",
+                    "display",
+                    "display problem",
+                    "display issue",
+                    "screen not working",
+                    "display not working",
+                    "brightness",
+                    "dark screen",
+                    "screen is dark",
+                    "no display",
+                    "no signal"
+                ],
+
+                title: "Laptop Display Issue",
+
+                severity: "medium",
+
+                causes: [
+                    "Display driver issue",
+                    "Brightness setting problem",
+                    "External display configuration",
+                    "Possible hardware issue"
+                ],
+
+                solutions: [
+                    "Adjust the screen brightness",
+                    "Restart the laptop",
+                    "Disconnect unnecessary external displays",
+                    "Update the display driver",
+                    "Seek professional support if the display remains blank"
+                ]
+            },
+
+
+            {
+                keywords: [
+                    "hot",
+                    "too hot",
+                    "very hot",
+                    "extremely hot",
+                    "heating",
+                    "heating up",
+                    "gets hot",
+                    "overheating",
+                    "overheat",
+                    "fan",
+                    "fan noise",
+                    "loud fan",
+                    "fan running fast",
+                    "temperature",
+                    "high temperature"
+                ],
+
+                title: "Laptop Heating Issue",
+
+                severity: "high",
+
+                causes: [
+                    "Blocked ventilation",
+                    "Dust accumulation",
+                    "Heavy processor usage",
+                    "High-performance applications"
+                ],
+
+                solutions: [
+                    "Place the laptop on a hard flat surface",
+                    "Close demanding applications",
+                    "Keep ventilation openings clear",
+                    "Allow the laptop to cool down",
+                    "Get the cooling system professionally cleaned if needed"
+                ]
+            }
+
+        ],
+
+
+        desktop: [
+
+            {
+                keywords: [
+                    "power",
+                    "power problem",
+                    "power issue",
+                    "turn on",
+                    "turns on",
+                    "not turning on",
+                    "doesn't turn on",
+                    "doesnt turn on",
+                    "wont turn on",
+                    "won't turn on",
+                    "start",
+                    "startup",
+                    "boot",
+                    "not booting",
+                    "boot problem",
+                    "no display",
+                    "no signal"
+                ],
+
+                title: "Desktop Startup Issue",
+
+                severity: "high",
+
+                causes: [
+                    "Power connection problem",
+                    "Power supply issue",
+                    "Display cable problem",
+                    "Internal hardware issue"
+                ],
+
+                solutions: [
+                    "Check the power cable",
+                    "Check the wall socket",
+                    "Check the monitor power and display cable",
+                    "Disconnect unnecessary external devices",
+                    "Seek professional inspection if the desktop still does not start"
+                ]
+            },
+
+
+            {
+                keywords: [
+                    "slow",
+                    "very slow",
+                    "extremely slow",
+                    "too slow",
+                    "super slow",
+                    "really slow",
+                    "incredibly slow",
+                    "sluggish",
+                    "lag",
+                    "lagging",
+                    "freeze",
+                    "freezing",
+                    "hang",
+                    "hanging",
+                    "stuck",
+                    "not responding",
+                    "performance problem",
+                    "performance issue",
+                    "computer slow",
+                    "pc slow",
+                    "pc is slow"
+                ],
+
+                title: "Desktop Performance Issue",
+
+                severity: "medium",
+
+                causes: [
+                    "High CPU or memory usage",
+                    "Low storage",
+                    "Too many startup applications",
+                    "Background software"
+                ],
+
+                solutions: [
+                    "Restart the computer",
+                    "Close unnecessary programs",
+                    "Free up storage",
+                    "Check system resource usage",
+                    "Update the operating system and drivers"
+                ]
+            },
+
+
+            {
+                keywords: [
+                    "internet",
+                    "internet not working",
+                    "wifi",
+                    "wi-fi",
+                    "network",
+                    "network problem",
+                    "network issue",
+                    "no internet",
+                    "connection problem",
+                    "connection issue"
+                ],
+
+                title: "Desktop Network Issue",
+
+                severity: "medium",
+
+                causes: [
+                    "Network connection problem",
+                    "Router issue",
+                    "Network adapter issue",
+                    "DNS or configuration problem"
+                ],
+
+                solutions: [
+                    "Restart the router",
+                    "Check the network cable",
+                    "Reconnect to the network",
+                    "Restart the computer",
+                    "Check network adapter settings"
+                ]
+            }
+
+        ],
+
+
+        tablet: [
+
+            {
+                keywords: [
+                    "charge",
+                    "charging",
+                    "charger",
+                    "battery",
+                    "battery drain",
+                    "battery draining",
+                    "slow charging",
+                    "very slow charging",
+                    "extremely slow charging",
+                    "not charging",
+                    "doesn't charge",
+                    "doesnt charge",
+                    "wont charge",
+                    "won't charge"
+                ],
+
+                title: "Tablet Charging Issue",
+
+                severity: "medium",
+
+                causes: [
+                    "Charging cable problem",
+                    "Charging port debris",
+                    "Battery health issue",
+                    "Power adapter issue"
+                ],
+
+                solutions: [
+                    "Try another compatible charging cable",
+                    "Check the charging port",
+                    "Try another power adapter",
+                    "Restart the tablet",
+                    "Seek professional inspection if charging remains abnormal"
+                ]
+            },
+
+
+            {
+                keywords: [
+                    "slow",
+                    "very slow",
+                    "extremely slow",
+                    "too slow",
+                    "super slow",
+                    "really slow",
+                    "incredibly slow",
+                    "sluggish",
+                    "lag",
+                    "lagging",
+                    "freeze",
+                    "freezing",
+                    "hang",
+                    "hanging",
+                    "stuck",
+                    "not responding",
+                    "unresponsive",
+                    "tablet slow",
+                    "tablet is slow"
+                ],
+
+                title: "Tablet Performance Issue",
+
+                severity: "medium",
+
+                causes: [
+                    "Low storage",
+                    "Too many applications",
+                    "Background processes",
+                    "Outdated software"
+                ],
+
+                solutions: [
+                    "Close unnecessary applications",
+                    "Free up storage",
+                    "Restart the tablet",
+                    "Update the operating system",
+                    "Remove unnecessary applications"
+                ]
+            }
+
+        ],
+
+
+        tv: [
+
+            {
+                keywords: [
+                    "screen",
+                    "display",
+                    "black screen",
+                    "blank screen",
+                    "black display",
+                    "no picture",
+                    "picture not showing",
+                    "screen not working",
+                    "display not working",
+                    "no signal",
+                    "hdmi problem",
+                    "hdmi not working",
+                    "tv screen problem",
+                    "tv display problem"
+                ],
+
+                title: "TV Display Issue",
+
+                severity: "medium",
+
+                causes: [
+                    "Incorrect input source",
+                    "Loose HDMI or display connection",
+                    "Cable problem",
+                    "Temporary software issue"
+                ],
+
+                solutions: [
+                    "Check the selected input source",
+                    "Reconnect HDMI or display cables",
+                    "Try another HDMI port",
+                    "Restart the TV",
+                    "Check the external device connected to the TV"
+                ]
+            },
+
+
+            {
+                keywords: [
+                    "sound",
+                    "no sound",
+                    "audio",
+                    "audio problem",
+                    "audio issue",
+                    "volume",
+                    "speaker",
+                    "speaker not working",
+                    "mute",
+                    "muted",
+                    "sound not working",
+                    "tv sound problem"
+                ],
+
+                title: "TV Audio Issue",
+
+                severity: "medium",
+
+                causes: [
+                    "Muted television",
+                    "Incorrect audio output",
+                    "External device configuration",
+                    "Temporary software issue"
+                ],
+
+                solutions: [
+                    "Check the TV volume",
+                    "Make sure mute is disabled",
+                    "Check audio output settings",
+                    "Restart the TV",
+                    "Check connected speakers or sound systems"
+                ]
+            },
+
+
+            {
+                keywords: [
+                    "slow",
+                    "very slow",
+                    "extremely slow",
+                    "too slow",
+                    "tv slow",
+                    "smart tv slow",
+                    "apps slow",
+                    "app slow",
+                    "buffering",
+                    "loading slowly"
+                ],
+
+                title: "Smart TV Performance Issue",
+
+                severity: "medium",
+
+                causes: [
+                    "Limited available storage",
+                    "Too many background processes",
+                    "Slow internet connection",
+                    "Outdated TV software"
+                ],
+
+                solutions: [
+                    "Restart the TV",
+                    "Close unused applications",
+                    "Check the internet connection",
+                    "Update the TV software",
+                    "Remove unnecessary applications if possible"
+                ]
+            }
+
+        ],
+
+
+        wifi: [
+
+            {
+                keywords: [
+                    "slow",
+                    "very slow",
+                    "extremely slow",
+                    "too slow",
+                    "super slow",
+                    "really slow",
+                    "incredibly slow",
+                    "terribly slow",
+                    "painfully slow",
+                    "internet slow",
+                    "internet is slow",
+                    "wifi slow",
+                    "wifi is slow",
+                    "wi-fi slow",
+                    "wi-fi is slow",
+                    "slow internet",
+                    "slow wifi",
+                    "slow wi-fi",
+                    "internet speed slow",
+                    "speed is slow",
+                    "speed very slow",
+                    "low speed",
+                    "poor speed",
+                    "bad speed",
+                    "slow connection",
+                    "very slow connection",
+                    "extremely slow connection",
+                    "connection is slow",
+                    "network slow",
+                    "network is slow",
+                    "buffering",
+                    "constant buffering",
+                    "video buffering",
+                    "youtube buffering",
+                    "pages loading slowly",
+                    "websites loading slowly",
+                    "download slow",
+                    "downloads slow",
+                    "upload slow",
+                    "uploads slow",
+                    "internet lag",
+                    "wifi lag",
+                    "high ping",
+                    "ping is high"
+                ],
+
+                title: "Slow Internet Connection",
+
+                severity: "medium",
+
+                causes: [
+                    "Network congestion",
+                    "Weak Wi-Fi signal",
+                    "Too many connected devices",
+                    "Router performance issue",
+                    "Internet service provider speed issue"
+                ],
+
+                solutions: [
+                    "Move closer to the router",
+                    "Restart the router",
+                    "Disconnect unused devices",
+                    "Check your internet speed",
+                    "Try connecting another device",
+                    "Use a wired connection if available",
+                    "Contact your internet service provider if the issue continues"
+                ]
+            },
+
+
+            {
+                keywords: [
+                    "not connected",
+                    "not connecting",
+                    "cannot connect",
+                    "can't connect",
+                    "unable to connect",
+                    "connection failed",
+                    "wifi disconnected",
+                    "wifi disconnecting",
+                    "wifi keeps disconnecting",
+                    "wi-fi disconnected",
+                    "wi-fi disconnecting",
+                    "internet disconnected",
+                    "no internet",
+                    "no internet connection",
+                    "internet not working",
+                    "wifi not working",
+                    "wifi is not working",
+                    "wi-fi not working",
+                    "network unavailable",
+                    "network not available",
+                    "connection lost",
+                    "lost connection"
+                ],
+
+                title: "Wi-Fi Connection Issue",
+
+                severity: "medium",
+
+                causes: [
+                    "Router connection problem",
+                    "Incorrect Wi-Fi credentials",
+                    "Weak signal",
+                    "Internet service interruption"
+                ],
+
+                solutions: [
+                    "Restart the router",
+                    "Reconnect to the Wi-Fi network",
+                    "Check the Wi-Fi password",
+                    "Move closer to the router",
+                    "Check whether other devices can connect",
+                    "Check whether your internet service provider has an outage"
+                ]
+            },
+
+
+            {
+                keywords: [
+                    "wifi signal",
+                    "weak signal",
+                    "weak wifi",
+                    "weak wi-fi",
+                    "poor signal",
+                    "low signal",
+                    "signal is weak",
+                    "wifi range",
+                    "poor range",
+                    "wifi range problem",
+                    "far from router",
+                    "signal drops",
+                    "wifi signal drops",
+                    "weak connection"
+                ],
+
+                title: "Weak Wi-Fi Signal",
+
+                severity: "medium",
+
+                causes: [
+                    "Device is far from the router",
+                    "Walls or obstacles are blocking the signal",
+                    "Router placement may be poor",
+                    "Wireless interference may be present"
+                ],
+
+                solutions: [
+                    "Move closer to the router",
+                    "Place the router in an open central location",
+                    "Remove unnecessary obstacles around the router",
+                    "Restart the router",
+                    "Consider a Wi-Fi extender for larger areas"
+                ]
+            }
+
+        ]
+
+    };
+
+
+    const genericDiagnosis = {
+
+        title: "General Troubleshooting Required",
+
+        severity: "medium",
+
+        causes: [
+            "The provided symptoms do not match a specific known issue",
+            "The problem may be software-related",
+            "The problem may require a physical inspection"
+        ],
+
+        solutions: [
+            "Restart the device",
+            "Check power and cable connections",
+            "Install available software updates",
+            "Remove recently installed software if appropriate",
+            "If the issue continues, consult a qualified technician"
+        ]
+
+    };
+
+
+    /*
+     * BETTER KEYWORD MATCHING
+     *
+     * Longer phrases receive more weight.
+     * This prevents a generic word such as
+     * "slow" from overpowering a more specific phrase.
+     */
+
+    function findDiagnosis(
+        device,
+        description,
+        context
+    ) {
+
+        const rules =
+            diagnosisRules[device] || [];
+
+
+        const text = (
+            description +
+            " " +
+            context
+        ).toLowerCase();
+
+
+        let bestRule = null;
+        let bestScore = 0;
+
+
+        rules.forEach(function(rule) {
+
+            let score = 0;
+
+
+            rule.keywords.forEach(function(keyword) {
+
+                const normalizedKeyword =
+                    keyword.toLowerCase().trim();
+
+
+                if (
+                    normalizedKeyword &&
+                    text.includes(normalizedKeyword)
+                ) {
+
+                    /*
+                     * Longer keywords receive a higher score.
+                     */
+                    score += Math.max(
+                        1,
+                        normalizedKeyword.split(/\s+/).length
+                    );
+
+                }
+
+            });
+
+
+            if (score > bestScore) {
+
+                bestScore = score;
+                bestRule = rule;
 
             }
 
+        });
+
+
+        if (bestRule) {
+            return bestRule;
         }
 
 
-        /* ==========================================
-           POWER
-        ========================================== */
+        return genericDiagnosis;
 
-        function selectPowerState(
-            button,
-            key,
-            label
-        ) {
-
-            document
-                .querySelectorAll(
-                    "#screen1 .option-card"
-                )
-                .forEach(function(card) {
-
-                    card.classList.remove("selected");
-
-                });
+    }
 
 
-            button.classList.add("selected");
+    function startDiagnosis() {
 
-
-            appState.powerState = key;
-            appState.powerLabel = label;
-
-
+        const description =
             document
                 .getElementById(
-                    "powerNextButton"
+                    "problemDescription"
                 )
-                .disabled = false;
-
-        }
-
-
-        function goToScreen2() {
-
-            if (!appState.powerState) {
-
-                alert(
-                    "Please select the power status first."
-                );
-
-                return;
-            }
+                .value
+                .trim();
 
 
-            showScreen(2);
-
-        }
-
-
-        /* ==========================================
-           DEVICE
-        ========================================== */
-
-        function selectDevice(
-            button,
-            device
-        ) {
-
+        const whenStarted =
             document
-                .querySelectorAll(".device-card")
-                .forEach(function(card) {
-
-                    card.classList.remove("selected");
-
-                });
-
-
-            button.classList.add("selected");
-
-            appState.device = device;
-
-        }
-
-
-        /* ==========================================
-           DIAGNOSIS DATABASE
-        ========================================== */
-
-        const diagnosisRules = {
-
-            phone: [
-
-                {
-                    keywords: [
-                        "battery",
-                        "battery problem",
-                        "battery issue",
-                        "battery drain",
-                        "battery draining",
-                        "drains fast",
-                        "draining fast",
-                        "charge",
-                        "charging",
-                        "charger",
-                        "charging problem",
-                        "charging issue",
-                        "slow charge",
-                        "slow charging",
-                        "very slow charging",
-                        "extremely slow charging",
-                        "charging slowly",
-                        "not charging",
-                        "doesn't charge",
-                        "doesnt charge",
-                        "wont charge",
-                        "won't charge",
-                        "charge not working"
-                    ],
-
-                    title: "Charging or Battery Issue",
-
-                    severity: "medium",
-
-                    causes: [
-                        "Damaged or unsuitable charging cable",
-                        "Dust or debris in the charging port",
-                        "Battery health may have decreased",
-                        "Background applications may be consuming power"
-                    ],
-
-                    solutions: [
-                        "Try a different compatible charging cable",
-                        "Check the charging port for visible debris",
-                        "Close unnecessary background applications",
-                        "Try charging from a different power source",
-                        "If the problem continues, have the battery and charging port checked"
-                    ]
-                },
-
-
-                {
-                    keywords: [
-                        "hot",
-                        "too hot",
-                        "very hot",
-                        "extremely hot",
-                        "heating",
-                        "heating up",
-                        "heats up",
-                        "overheating",
-                        "overheat",
-                        "temperature",
-                        "high temperature",
-                        "gets hot",
-                        "becomes hot",
-                        "phone gets hot"
-                    ],
-
-                    title: "Phone Overheating",
-
-                    severity: "high",
-
-                    causes: [
-                        "Too many applications may be running",
-                        "Heavy applications can increase processor usage",
-                        "Charging while using demanding applications can produce heat",
-                        "Poor ventilation may contribute to heating"
-                    ],
-
-                    solutions: [
-                        "Close applications you are not using",
-                        "Move the phone to a cool and ventilated place",
-                        "Avoid heavy usage while charging",
-                        "Restart the device",
-                        "If overheating continues, seek professional inspection"
-                    ]
-                },
-
-
-                {
-                    keywords: [
-                        "slow",
-                        "very slow",
-                        "extremely slow",
-                        "too slow",
-                        "super slow",
-                        "really slow",
-                        "incredibly slow",
-                        "terribly slow",
-                        "sluggish",
-                        "lag",
-                        "lagging",
-                        "lags",
-                        "freeze",
-                        "freezing",
-                        "hang",
-                        "hanging",
-                        "stuck",
-                        "not responding",
-                        "unresponsive",
-                        "performance problem",
-                        "performance issue",
-                        "phone slow",
-                        "phone is slow"
-                    ],
-
-                    title: "Performance or Software Issue",
-
-                    severity: "medium",
-
-                    causes: [
-                        "Low available storage",
-                        "Too many background applications",
-                        "Outdated software",
-                        "A problematic application"
-                    ],
-
-                    solutions: [
-                        "Free up unnecessary storage",
-                        "Close unused applications",
-                        "Restart the device",
-                        "Update the operating system",
-                        "Remove recently installed problematic applications"
-                    ]
-                },
-
-
-                {
-                    keywords: [
-                        "screen",
-                        "display",
-                        "black screen",
-                        "blank screen",
-                        "screen black",
-                        "screen blank",
-                        "touch",
-                        "touchscreen",
-                        "touch not working",
-                        "touch not responding",
-                        "cracked screen",
-                        "screen cracked",
-                        "display not working",
-                        "screen not working"
-                    ],
-
-                    title: "Display or Touchscreen Issue",
-
-                    severity: "medium",
-
-                    causes: [
-                        "Temporary software problem",
-                        "Physical screen damage",
-                        "Touchscreen hardware issue",
-                        "Loose internal connection"
-                    ],
-
-                    solutions: [
-                        "Restart the device",
-                        "Clean and dry the screen",
-                        "Check for visible physical damage",
-                        "Remove accessories that may interfere with the screen",
-                        "If the issue remains, seek professional inspection"
-                    ]
-                }
-
-            ],
-
-
-            laptop: [
-
-                {
-                    keywords: [
-                        "battery",
-                        "battery problem",
-                        "battery issue",
-                        "battery draining",
-                        "battery drain",
-                        "charge",
-                        "charging",
-                        "charger",
-                        "charging problem",
-                        "charging issue",
-                        "slow charge",
-                        "slow charging",
-                        "very slow charging",
-                        "extremely slow charging",
-                        "not charging",
-                        "doesn't charge",
-                        "doesnt charge",
-                        "wont charge",
-                        "won't charge"
-                    ],
-
-                    title: "Laptop Power or Charging Issue",
-
-                    severity: "medium",
-
-                    causes: [
-                        "Faulty charger or cable",
-                        "Battery health issue",
-                        "Charging port problem",
-                        "Power management problem"
-                    ],
-
-                    solutions: [
-                        "Check that the charger is properly connected",
-                        "Try another compatible power outlet",
-                        "Check the charging cable for visible damage",
-                        "Restart the laptop",
-                        "Have the charger, port and battery inspected if the problem continues"
-                    ]
-                },
-
-
-                {
-                    keywords: [
-                        "slow",
-                        "very slow",
-                        "extremely slow",
-                        "too slow",
-                        "super slow",
-                        "really slow",
-                        "incredibly slow",
-                        "sluggish",
-                        "lag",
-                        "lagging",
-                        "freeze",
-                        "freezing",
-                        "hang",
-                        "hanging",
-                        "stuck",
-                        "not responding",
-                        "unresponsive",
-                        "performance issue",
-                        "performance problem",
-                        "laptop slow",
-                        "laptop is slow"
-                    ],
-
-                    title: "Laptop Performance Issue",
-
-                    severity: "medium",
-
-                    causes: [
-                        "Too many applications running",
-                        "Low storage space",
-                        "High memory usage",
-                        "Background processes",
-                        "Outdated drivers or software"
-                    ],
-
-                    solutions: [
-                        "Close unnecessary applications",
-                        "Restart the laptop",
-                        "Free up storage space",
-                        "Check which applications are using high memory",
-                        "Update the operating system and drivers"
-                    ]
-                },
-
-
-                {
-                    keywords: [
-                        "black screen",
-                        "blank screen",
-                        "screen",
-                        "display",
-                        "display problem",
-                        "display issue",
-                        "screen not working",
-                        "display not working",
-                        "brightness",
-                        "dark screen",
-                        "screen is dark",
-                        "no display",
-                        "no signal"
-                    ],
-
-                    title: "Laptop Display Issue",
-
-                    severity: "medium",
-
-                    causes: [
-                        "Display driver issue",
-                        "Brightness setting problem",
-                        "External display configuration",
-                        "Possible hardware issue"
-                    ],
-
-                    solutions: [
-                        "Adjust the screen brightness",
-                        "Restart the laptop",
-                        "Disconnect unnecessary external displays",
-                        "Update the display driver",
-                        "Seek professional support if the display remains blank"
-                    ]
-                },
-
-
-                {
-                    keywords: [
-                        "hot",
-                        "too hot",
-                        "very hot",
-                        "extremely hot",
-                        "heating",
-                        "heating up",
-                        "gets hot",
-                        "overheating",
-                        "overheat",
-                        "fan",
-                        "fan noise",
-                        "loud fan",
-                        "fan running fast",
-                        "temperature",
-                        "high temperature"
-                    ],
-
-                    title: "Laptop Heating Issue",
-
-                    severity: "high",
-
-                    causes: [
-                        "Blocked ventilation",
-                        "Dust accumulation",
-                        "Heavy processor usage",
-                        "High-performance applications"
-                    ],
-
-                    solutions: [
-                        "Place the laptop on a hard flat surface",
-                        "Close demanding applications",
-                        "Keep ventilation openings clear",
-                        "Allow the laptop to cool down",
-                        "Get the cooling system professionally cleaned if needed"
-                    ]
-                }
-
-            ],
-
-
-            desktop: [
-
-                {
-                    keywords: [
-                        "power",
-                        "power problem",
-                        "power issue",
-                        "turn on",
-                        "turns on",
-                        "not turning on",
-                        "doesn't turn on",
-                        "doesnt turn on",
-                        "wont turn on",
-                        "won't turn on",
-                        "start",
-                        "startup",
-                        "boot",
-                        "not booting",
-                        "boot problem",
-                        "no display",
-                        "no signal"
-                    ],
-
-                    title: "Desktop Startup Issue",
-
-                    severity: "high",
-
-                    causes: [
-                        "Power connection problem",
-                        "Power supply issue",
-                        "Display cable problem",
-                        "Internal hardware issue"
-                    ],
-
-                    solutions: [
-                        "Check the power cable",
-                        "Check the wall socket",
-                        "Check the monitor power and display cable",
-                        "Disconnect unnecessary external devices",
-                        "Seek professional inspection if the desktop still does not start"
-                    ]
-                },
-
-
-                {
-                    keywords: [
-                        "slow",
-                        "very slow",
-                        "extremely slow",
-                        "too slow",
-                        "super slow",
-                        "really slow",
-                        "incredibly slow",
-                        "sluggish",
-                        "lag",
-                        "lagging",
-                        "freeze",
-                        "freezing",
-                        "hang",
-                        "hanging",
-                        "stuck",
-                        "not responding",
-                        "performance problem",
-                        "performance issue",
-                        "computer slow",
-                        "pc slow",
-                        "pc is slow"
-                    ],
-
-                    title: "Desktop Performance Issue",
-
-                    severity: "medium",
-
-                    causes: [
-                        "High CPU or memory usage",
-                        "Low storage",
-                        "Too many startup applications",
-                        "Background software"
-                    ],
-
-                    solutions: [
-                        "Restart the computer",
-                        "Close unnecessary programs",
-                        "Free up storage",
-                        "Check system resource usage",
-                        "Update the operating system and drivers"
-                    ]
-                },
-
-
-                {
-                    keywords: [
-                        "internet",
-                        "internet not working",
-                        "wifi",
-                        "wi-fi",
-                        "network",
-                        "network problem",
-                        "network issue",
-                        "no internet",
-                        "connection problem",
-                        "connection issue"
-                    ],
-
-                    title: "Desktop Network Issue",
-
-                    severity: "medium",
-
-                    causes: [
-                        "Network connection problem",
-                        "Router issue",
-                        "Network adapter issue",
-                        "DNS or configuration problem"
-                    ],
-
-                    solutions: [
-                        "Restart the router",
-                        "Check the network cable",
-                        "Reconnect to the network",
-                        "Restart the computer",
-                        "Check network adapter settings"
-                    ]
-                }
-
-            ],
-
-
-            tablet: [
-
-                {
-                    keywords: [
-                        "charge",
-                        "charging",
-                        "charger",
-                        "battery",
-                        "battery drain",
-                        "battery draining",
-                        "slow charging",
-                        "very slow charging",
-                        "extremely slow charging",
-                        "not charging",
-                        "doesn't charge",
-                        "doesnt charge",
-                        "wont charge",
-                        "won't charge"
-                    ],
-
-                    title: "Tablet Charging Issue",
-
-                    severity: "medium",
-
-                    causes: [
-                        "Charging cable problem",
-                        "Charging port debris",
-                        "Battery health issue",
-                        "Power adapter issue"
-                    ],
-
-                    solutions: [
-                        "Try another compatible charging cable",
-                        "Check the charging port",
-                        "Try another power adapter",
-                        "Restart the tablet",
-                        "Seek professional inspection if charging remains abnormal"
-                    ]
-                },
-
-
-                {
-                    keywords: [
-                        "slow",
-                        "very slow",
-                        "extremely slow",
-                        "too slow",
-                        "super slow",
-                        "really slow",
-                        "incredibly slow",
-                        "sluggish",
-                        "lag",
-                        "lagging",
-                        "freeze",
-                        "freezing",
-                        "hang",
-                        "hanging",
-                        "stuck",
-                        "not responding",
-                        "unresponsive",
-                        "tablet slow",
-                        "tablet is slow"
-                    ],
-
-                    title: "Tablet Performance Issue",
-
-                    severity: "medium",
-
-                    causes: [
-                        "Low storage",
-                        "Too many applications",
-                        "Background processes",
-                        "Outdated software"
-                    ],
-
-                    solutions: [
-                        "Close unnecessary applications",
-                        "Free up storage",
-                        "Restart the tablet",
-                        "Update the operating system",
-                        "Remove unnecessary applications"
-                    ]
-                }
-
-            ],
-
-
-            tv: [
-
-                {
-                    keywords: [
-                        "screen",
-                        "display",
-                        "black screen",
-                        "blank screen",
-                        "black display",
-                        "no picture",
-                        "picture not showing",
-                        "screen not working",
-                        "display not working",
-                        "no signal",
-                        "hdmi problem",
-                        "hdmi not working",
-                        "tv screen problem",
-                        "tv display problem"
-                    ],
-
-                    title: "TV Display Issue",
-
-                    severity: "medium",
-
-                    causes: [
-                        "Incorrect input source",
-                        "Loose HDMI or display connection",
-                        "Cable problem",
-                        "Temporary software issue"
-                    ],
-
-                    solutions: [
-                        "Check the selected input source",
-                        "Reconnect HDMI or display cables",
-                        "Try another HDMI port",
-                        "Restart the TV",
-                        "Check the external device connected to the TV"
-                    ]
-                },
-
-
-                {
-                    keywords: [
-                        "sound",
-                        "no sound",
-                        "audio",
-                        "audio problem",
-                        "audio issue",
-                        "volume",
-                        "speaker",
-                        "speaker not working",
-                        "mute",
-                        "muted",
-                        "sound not working",
-                        "tv sound problem"
-                    ],
-
-                    title: "TV Audio Issue",
-
-                    severity: "medium",
-
-                    causes: [
-                        "Muted television",
-                        "Incorrect audio output",
-                        "External device configuration",
-                        "Temporary software issue"
-                    ],
-
-                    solutions: [
-                        "Check the TV volume",
-                        "Make sure mute is disabled",
-                        "Check audio output settings",
-                        "Restart the TV",
-                        "Check connected speakers or sound systems"
-                    ]
-                },
-
-
-                {
-                    keywords: [
-                        "slow",
-                        "very slow",
-                        "extremely slow",
-                        "too slow",
-                        "tv slow",
-                        "smart tv slow",
-                        "apps slow",
-                        "app slow",
-                        "buffering",
-                        "loading slowly"
-                    ],
-
-                    title: "Smart TV Performance Issue",
-
-                    severity: "medium",
-
-                    causes: [
-                        "Limited available storage",
-                        "Too many background processes",
-                        "Slow internet connection",
-                        "Outdated TV software"
-                    ],
-
-                    solutions: [
-                        "Restart the TV",
-                        "Close unused applications",
-                        "Check the internet connection",
-                        "Update the TV software",
-                        "Remove unnecessary applications if possible"
-                    ]
-                }
-
-            ],
-
-
-            wifi: [
-
-                {
-                    keywords: [
-                        "slow",
-                        "very slow",
-                        "extremely slow",
-                        "too slow",
-                        "super slow",
-                        "really slow",
-                        "incredibly slow",
-                        "terribly slow",
-                        "painfully slow",
-                        "internet slow",
-                        "internet is slow",
-                        "wifi slow",
-                        "wifi is slow",
-                        "wi-fi slow",
-                        "wi-fi is slow",
-                        "slow internet",
-                        "slow wifi",
-                        "slow wi-fi",
-                        "internet speed slow",
-                        "speed is slow",
-                        "speed very slow",
-                        "low speed",
-                        "poor speed",
-                        "bad speed",
-                        "slow connection",
-                        "very slow connection",
-                        "extremely slow connection",
-                        "connection is slow",
-                        "network slow",
-                        "network is slow",
-                        "buffering",
-                        "constant buffering",
-                        "video buffering",
-                        "youtube buffering",
-                        "pages loading slowly",
-                        "websites loading slowly",
-                        "download slow",
-                        "downloads slow",
-                        "upload slow",
-                        "uploads slow",
-                        "internet lag",
-                        "wifi lag",
-                        "high ping",
-                        "ping is high"
-                    ],
-
-                    title: "Slow Internet Connection",
-
-                    severity: "medium",
-
-                    causes: [
-                        "Network congestion",
-                        "Weak Wi-Fi signal",
-                        "Too many connected devices",
-                        "Router performance issue",
-                        "Internet service provider speed issue"
-                    ],
-
-                    solutions: [
-                        "Move closer to the router",
-                        "Restart the router",
-                        "Disconnect unused devices",
-                        "Check your internet speed",
-                        "Try connecting another device",
-                        "Use a wired connection if available",
-                        "Contact your internet service provider if the issue continues"
-                    ]
-                },
-
-
-                {
-                    keywords: [
-                        "not connected",
-                        "not connecting",
-                        "cannot connect",
-                        "can't connect",
-                        "unable to connect",
-                        "connection failed",
-                        "wifi disconnected",
-                        "wifi disconnecting",
-                        "wifi keeps disconnecting",
-                        "wi-fi disconnected",
-                        "wi-fi disconnecting",
-                        "internet disconnected",
-                        "no internet",
-                        "no internet connection",
-                        "internet not working",
-                        "wifi not working",
-                        "wifi is not working",
-                        "wi-fi not working",
-                        "network unavailable",
-                        "network not available",
-                        "connection lost",
-                        "lost connection"
-                    ],
-
-                    title: "Wi-Fi Connection Issue",
-
-                    severity: "medium",
-
-                    causes: [
-                        "Router connection problem",
-                        "Incorrect Wi-Fi credentials",
-                        "Weak signal",
-                        "Internet service interruption"
-                    ],
-
-                    solutions: [
-                        "Restart the router",
-                        "Reconnect to the Wi-Fi network",
-                        "Check the Wi-Fi password",
-                        "Move closer to the router",
-                        "Check whether other devices can connect",
-                        "Check whether your internet service provider has an outage"
-                    ]
-                },
-
-
-                {
-                    keywords: [
-                        "wifi signal",
-                        "weak signal",
-                        "weak wifi",
-                        "weak wi-fi",
-                        "poor signal",
-                        "low signal",
-                        "signal is weak",
-                        "wifi range",
-                        "poor range",
-                        "wifi range problem",
-                        "far from router",
-                        "signal drops",
-                        "wifi signal drops",
-                        "weak connection"
-                    ],
-
-                    title: "Weak Wi-Fi Signal",
-
-                    severity: "medium",
-
-                    causes: [
-                        "Device is far from the router",
-                        "Walls or obstacles are blocking the signal",
-                        "Router placement may be poor",
-                        "Wireless interference may be present"
-                    ],
-
-                    solutions: [
-                        "Move closer to the router",
-                        "Place the router in an open central location",
-                        "Remove unnecessary obstacles around the router",
-                        "Restart the router",
-                        "Consider a Wi-Fi extender for larger areas"
-                    ]
-                }
-
-            ]
-
-        };
-
-
-        /* ==========================================
-           GENERIC DIAGNOSIS
-        ========================================== */
-
-        const genericDiagnosis = {
-
-            title: "General Troubleshooting Required",
-
-            severity: "medium",
-
-            causes: [
-                "The provided symptoms do not match a specific known issue",
-                "The problem may be software-related",
-                "The problem may require a physical inspection"
-            ],
-
-            solutions: [
-                "Restart the device",
-                "Check power and cable connections",
-                "Install available software updates",
-                "Remove recently installed software if appropriate",
-                "If the issue continues, consult a qualified technician"
-            ]
-
-        };
-
-
-        /* ==========================================
-           FIND BEST DIAGNOSIS
-        ========================================== */
-
-        function findDiagnosis(
-            device,
-            description,
-            context
-        ) {
-
-            const rules =
-                diagnosisRules[device] || [];
-
-
-            const text = (
-                description +
-                " " +
-                context
-            ).toLowerCase();
-
-
-            let bestRule = null;
-            let bestScore = 0;
-
-
-            rules.forEach(function(rule) {
-
-                let score = 0;
-
-
-                rule.keywords.forEach(function(keyword) {
-
-                    if (
-                        text.includes(
-                            keyword.toLowerCase()
-                        )
-                    ) {
-
-                        score++;
-
-                    }
-
-                });
-
-
-                if (score > bestScore) {
-
-                    bestScore = score;
-                    bestRule = rule;
-
-                }
-
-            });
-
-
-            if (bestRule) {
-                return bestRule;
-            }
-
-
-            return genericDiagnosis;
-
-        }
-
-
-        /* ==========================================
-           START DIAGNOSIS
-        ========================================== */
-
-        function startDiagnosis() {
-
-            const description =
-                document
-                    .getElementById(
-                        "problemDescription"
-                    )
-                    .value
-                    .trim();
-
-
-            const whenStarted =
-                document
-                    .getElementById(
-                        "whenStarted"
-                    )
-                    .value;
-
-
-            const whatHappened =
-                document
-                    .getElementById(
-                        "whatHappened"
-                    )
-                    .value;
-
-
-            if (!appState.device) {
-
-                alert(
-                    "Please select your device."
-                );
-
-                return;
-            }
-
-
-            if (!description) {
-
-                alert(
-                    "Please describe the problem."
-                );
-
-                document
-                    .getElementById(
-                        "problemDescription"
-                    )
-                    .focus();
-
-                return;
-            }
-
-
-            appState.problemDescription =
-                description;
-
-            appState.whenStarted =
-                whenStarted;
-
-            appState.whatHappened =
-                whatHappened;
-
-
-            const context = [
-                appState.powerState || "",
-                whenStarted || "",
-                whatHappened || ""
-            ].join(" ");
-
-
-            showScreen(3);
-
-
-            const diagnosisContent =
-                document.getElementById(
-                    "diagnosisContent"
-                );
-
-
-            diagnosisContent.innerHTML = `
-
-                <div class="loading">
-
-                    <div class="spinner"></div>
-
-                    <h3>
-                        Analyzing your problem...
-                    </h3>
-
-                    <p style="color:#6b7280;margin-top:7px;">
-                        FixIt is checking the symptoms
-                        and possible causes.
-                    </p>
-
-                </div>
-
-            `;
-
-
-            setTimeout(function() {
-
-                const diagnosis =
-                    findDiagnosis(
-                        appState.device,
-                        description,
-                        context
-                    );
-
-
-                appState.diagnosis =
-                    diagnosis;
-
-
-                renderDiagnosis(diagnosis);
-
-                saveDiagnosis();
-
-            }, 900);
-
-        }
-
-
-        /* ==========================================
-           RENDER DIAGNOSIS
-        ========================================== */
-
-        function renderDiagnosis(diagnosis) {
-
-            const diagnosisContent =
-                document.getElementById(
-                    "diagnosisContent"
-                );
-
-
-            const severityClass =
-                diagnosis.severity === "low"
-                    ? "severity-low"
-                    : diagnosis.severity === "high"
-                        ? "severity-high"
-                        : "severity-medium";
-
-
-            const severityText =
-                diagnosis.severity
-                    .charAt(0)
-                    .toUpperCase() +
-                diagnosis.severity.slice(1);
-
-
-            const causesHTML =
-                diagnosis.causes
-                    .map(function(cause) {
-
-                        return `
-                            <li>
-                                ${escapeHTML(cause)}
-                            </li>
-                        `;
-
-                    })
-                    .join("");
-
-
-            const solutionsHTML =
-                diagnosis.solutions
-                    .map(function(solution) {
-
-                        return `
-                            <li>
-                                ${escapeHTML(solution)}
-                            </li>
-                        `;
-
-                    })
-                    .join("");
-
-
-            diagnosisContent.innerHTML = `
-
-                <div class="diagnosis-header">
-
-                    <div class="diagnosis-icon">
-                        ✓
-                    </div>
-
-                    <h2>
-                        ${escapeHTML(diagnosis.title)}
-                    </h2>
-
-                    <p>
-                        Based on the information you provided,
-                        this is the most likely category of the issue.
-                    </p>
-
-                    <span class="severity ${severityClass}">
-                        ${severityText} Priority
-                    </span>
-
-                </div>
-
-
-                <div class="result-grid">
-
-                    <div class="result-box">
-
-                        <h3>
-                            🔍 Possible Causes
-                        </h3>
-
-                        <ul>
-                            ${causesHTML}
-                        </ul>
-
-                    </div>
-
-
-                    <div class="result-box">
-
-                        <h3>
-                            🛠️ Recommended Steps
-                        </h3>
-
-                        <ol>
-                            ${solutionsHTML}
-                        </ol>
-
-                    </div>
-
-                </div>
-
-
-                <div
-                    class="result-box"
-                    style="margin-top:20px;">
-
-                    <h3>
-                        📋 Your Information
-                    </h3>
-
-                    <p>
-                        <strong>Device:</strong>
-                        ${escapeHTML(
-                            formatDevice(
-                                appState.device
-                            )
-                        )}
-                    </p>
-
-                    <p>
-                        <strong>Power:</strong>
-                        ${escapeHTML(
-                            appState.powerLabel
-                        )}
-                    </p>
-
-                    <p>
-                        <strong>Problem:</strong>
-                        ${escapeHTML(
-                            appState.problemDescription
-                        )}
-                    </p>
-
-                </div>
-
-
-                <div class="button-row">
-
-                    <button
-                        type="button"
-                        class="btn btn-secondary"
-                        onclick="resetApp()">
-
-                        ← Diagnose Another Problem
-
-                    </button>
-
-
-                    <button
-                        type="button"
-                        class="btn btn-primary"
-                        onclick="window.print()">
-
-                        🖨️ Print Result
-
-                    </button>
-
-                </div>
-
-            `;
-
-        }
-
-
-        /* ==========================================
-           FORMAT DEVICE
-        ========================================== */
-
-        function formatDevice(device) {
-
-            const names = {
-                phone: "Phone",
-                laptop: "Laptop",
-                desktop: "Desktop",
-                tablet: "Tablet",
-                tv: "TV",
-                wifi: "Wi-Fi"
-            };
-
-
-            return names[device] || device;
-
-        }
-
-
-        /* ==========================================
-           ESCAPE HTML
-        ========================================== */
-
-        function escapeHTML(value) {
-
-            return String(value)
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
-
-        }
-
-
-        /* ==========================================
-           GOOGLE SHEETS SAVE
-        ========================================== */
-
-        async function saveDiagnosis() {
-
-            if (
-                !APPSCRIPT_URL ||
-                APPSCRIPT_URL.includes(
-                    "YOUR_APPS_SCRIPT_ID"
+                .getElementById(
+                    "whenStarted"
                 )
-            ) {
-                return;
-            }
+                .value;
 
 
-            const data = {
-
-                timestamp:
-                    new Date().toISOString(),
-
-                powerState:
-                    appState.powerLabel,
-
-                device:
-                    formatDevice(
-                        appState.device
-                    ),
-
-                problem:
-                    appState.problemDescription,
-
-                whenStarted:
-                    appState.whenStarted,
-
-                whatHappened:
-                    appState.whatHappened,
-
-                diagnosis:
-                    appState.diagnosis
-                        ? appState.diagnosis.title
-                        : ""
-
-            };
-
-
-            try {
-
-                await fetch(
-                    APPSCRIPT_URL,
-                    {
-                        method: "POST",
-
-                        mode: "no-cors",
-
-                        headers: {
-                            "Content-Type":
-                                "text/plain;charset=utf-8"
-                        },
-
-                        body:
-                            JSON.stringify(data)
-                    }
-                );
-
-            } catch (error) {
-
-                console.log(
-                    "Data saving failed:",
-                    error
-                );
-
-            }
-
-        }
-
-
-        /* ==========================================
-           RESET
-        ========================================== */
-
-        function resetApp() {
-
-            appState.currentScreen = 1;
-            appState.powerState = null;
-            appState.powerLabel = "";
-            appState.device = null;
-            appState.problemDescription = "";
-            appState.whenStarted = "";
-            appState.whatHappened = "";
-            appState.diagnosis = null;
-
-
+        const whatHappened =
             document
-                .querySelectorAll(
-                    ".option-card, .device-card"
+                .getElementById(
+                    "whatHappened"
                 )
-                .forEach(function(card) {
+                .value
+                .trim();
 
-                    card.classList.remove(
-                        "selected"
-                    );
 
-                });
+        if (!appState.device) {
 
+            alert(
+                "Please select your device."
+            );
+
+            return;
+        }
+
+
+        if (!description) {
+
+            alert(
+                "Please describe the problem."
+            );
 
             document
                 .getElementById(
                     "problemDescription"
                 )
-                .value = "";
+                .focus();
 
-
-            document
-                .getElementById(
-                    "whenStarted"
-                )
-                .value = "";
-
-
-            document
-                .getElementById(
-                    "whatHappened"
-                )
-                .value = "";
-
-
-            document
-                .getElementById(
-                    "powerNextButton"
-                )
-                .disabled = true;
-
-
-            showScreen(1);
-
+            return;
         }
 
 
-        /* ==========================================
-           MODALS
-        ========================================== */
+        appState.problemDescription =
+            description;
 
-        function showSafety() {
+        appState.whenStarted =
+            whenStarted;
 
-            document
-                .getElementById(
-                    "safetyModal"
-                )
-                .classList.add("show");
+        appState.whatHappened =
+            whatHappened;
 
+
+        const context = [
+            appState.powerState || "",
+            appState.powerLabel || "",
+            whenStarted || "",
+            whatHappened || ""
+        ].join(" ");
+
+
+        showScreen(3);
+
+
+        const diagnosisContent =
+            document.getElementById(
+                "diagnosisContent"
+            );
+
+
+        diagnosisContent.innerHTML = `
+
+            <div class="loading">
+
+                <div class="spinner"></div>
+
+                <h3>
+                    Analyzing your problem...
+                </h3>
+
+                <p style="color:#6b7280;margin-top:7px;">
+                    FixIt is checking the symptoms
+                    and possible causes.
+                </p>
+
+            </div>
+
+        `;
+
+
+        setTimeout(function() {
+
+            const diagnosis =
+                findDiagnosis(
+                    appState.device,
+                    description,
+                    context
+                );
+
+
+            appState.diagnosis =
+                diagnosis;
+
+
+            renderDiagnosis(diagnosis);
+
+            saveDiagnosis();
+
+        }, 900);
+
+    }
+
+
+    function renderDiagnosis(diagnosis) {
+
+        const diagnosisContent =
+            document.getElementById(
+                "diagnosisContent"
+            );
+
+
+        const severityClass =
+            diagnosis.severity === "low"
+                ? "severity-low"
+                : diagnosis.severity === "high"
+                    ? "severity-high"
+                    : "severity-medium";
+
+
+        const severityText =
+            diagnosis.severity
+                .charAt(0)
+                .toUpperCase() +
+            diagnosis.severity.slice(1);
+
+
+        const causesHTML =
+            diagnosis.causes
+                .map(function(cause) {
+
+                    return `
+                        <li>
+                            ${escapeHTML(cause)}
+                        </li>
+                    `;
+
+                })
+                .join("");
+
+
+        const solutionsHTML =
+            diagnosis.solutions
+                .map(function(solution) {
+
+                    return `
+                        <li>
+                            ${escapeHTML(solution)}
+                        </li>
+                    `;
+
+                })
+                .join("");
+
+
+        diagnosisContent.innerHTML = `
+
+            <div class="diagnosis-header">
+
+                <div class="diagnosis-icon">
+                    ✓
+                </div>
+
+                <h2>
+                    ${escapeHTML(diagnosis.title)}
+                </h2>
+
+                <p>
+                    Based on the information you provided,
+                    this is the most likely category of the issue.
+                </p>
+
+                <span class="severity ${severityClass}">
+                    ${severityText} Priority
+                </span>
+
+            </div>
+
+
+            <div class="result-grid">
+
+                <div class="result-box">
+
+                    <h3>
+                        🔍 Possible Causes
+                    </h3>
+
+                    <ul>
+                        ${causesHTML}
+                    </ul>
+
+                </div>
+
+
+                <div class="result-box">
+
+                    <h3>
+                        🛠️ Recommended Steps
+                    </h3>
+
+                    <ol>
+                        ${solutionsHTML}
+                    </ol>
+
+                </div>
+
+            </div>
+
+
+            <div
+                class="result-box"
+                style="margin-top:20px;">
+
+                <h3>
+                    📋 Your Information
+                </h3>
+
+                <p>
+                    <strong>Device:</strong>
+                    ${escapeHTML(
+                        formatDevice(
+                            appState.device
+                        )
+                    )}
+                </p>
+
+                <p>
+                    <strong>Power:</strong>
+                    ${escapeHTML(
+                        appState.powerLabel
+                    )}
+                </p>
+
+                <p>
+                    <strong>Problem:</strong>
+                    ${escapeHTML(
+                        appState.problemDescription
+                    )}
+                </p>
+
+                <p>
+                    <strong>When Started:</strong>
+                    ${escapeHTML(
+                        formatWhenStarted(
+                            appState.whenStarted
+                        )
+                    )}
+                </p>
+
+                <p>
+                    <strong>What Happened:</strong>
+                    ${escapeHTML(
+                        appState.whatHappened ||
+                        "Not provided"
+                    )}
+                </p>
+
+            </div>
+
+
+            <div class="button-row">
+
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    onclick="resetApp()">
+
+                    ← Diagnose Another Problem
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="btn btn-primary"
+                    onclick="window.print()">
+
+                    🖨️ Print Result
+
+                </button>
+
+            </div>
+
+        `;
+
+    }
+
+
+    function formatDevice(device) {
+
+        const names = {
+
+            phone: "Phone",
+            laptop: "Laptop",
+            desktop: "Desktop",
+            tablet: "Tablet",
+            tv: "TV",
+            wifi: "Wi-Fi"
+
+        };
+
+
+        return names[device] || device;
+
+    }
+
+
+    function formatWhenStarted(value) {
+
+        const names = {
+
+            recently: "Recently",
+            today: "Today",
+            "few-days": "A few days ago",
+            week: "About a week ago",
+            "long-time": "More than a month ago",
+            suddenly: "Suddenly"
+
+        };
+
+
+        return names[value] || "Not provided";
+
+    }
+
+
+    function escapeHTML(value) {
+
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+
+    }
+
+
+    async function saveDiagnosis() {
+
+        if (
+            !APPSCRIPT_URL ||
+            APPSCRIPT_URL.includes(
+                "YOUR_APPSCRIPT_ID"
+            )
+        ) {
+            return;
         }
 
 
-        function showAbout() {
+        const data = {
 
-            document
-                .getElementById(
-                    "aboutModal"
-                )
-                .classList.add("show");
+            timestamp:
+                new Date().toISOString(),
+
+            powerState:
+                appState.powerLabel,
+
+            device:
+                formatDevice(
+                    appState.device
+                ),
+
+            problem:
+                appState.problemDescription,
+
+            whenStarted:
+                formatWhenStarted(
+                    appState.whenStarted
+                ),
+
+            whatHappened:
+                appState.whatHappened,
+
+            diagnosis:
+                appState.diagnosis
+                    ? appState.diagnosis.title
+                    : ""
+
+        };
+
+
+        try {
+
+            await fetch(
+                APPSCRIPT_URL,
+                {
+                    method: "POST",
+
+                    mode: "no-cors",
+
+                    headers: {
+                        "Content-Type":
+                            "text/plain;charset=utf-8"
+                    },
+
+                    body:
+                        JSON.stringify(data)
+                }
+            );
+
+        } catch (error) {
+
+            console.log(
+                "Data saving failed:",
+                error
+            );
 
         }
 
+    }
 
-        function closeModal(id) {
 
-            document
-                .getElementById(id)
-                .classList.remove("show");
+    function resetApp() {
 
-        }
+        appState.currentScreen = 1;
+        appState.powerState = null;
+        appState.powerLabel = "";
+        appState.device = null;
+        appState.problemDescription = "";
+        appState.whenStarted = "";
+        appState.whatHappened = "";
+        appState.diagnosis = null;
 
 
         document
-            .querySelectorAll(".modal")
-            .forEach(function(modal) {
+            .querySelectorAll(
+                ".option-card, .device-card"
+            )
+            .forEach(function(card) {
 
-                modal.addEventListener(
-                    "click",
-                    function(event) {
-
-                        if (
-                            event.target === modal
-                        ) {
-
-                            modal.classList.remove(
-                                "show"
-                            );
-
-                        }
-
-                    }
+                card.classList.remove(
+                    "selected"
                 );
 
             });
 
 
-        /* =========================
-           ESCAPE KEY
-        ========================= */
+        document
+            .getElementById(
+                "problemDescription"
+            )
+            .value = "";
 
-        document.addEventListener(
-            "keydown",
-            function(event) {
 
-                if (
-                    event.key === "Escape"
-                ) {
+        document
+            .getElementById(
+                "whenStarted"
+            )
+            .value = "";
 
-                    document
-                        .querySelectorAll(
-                            ".modal.show"
-                        )
-                        .forEach(function(modal) {
 
-                            modal.classList.remove(
-                                "show"
-                            );
+        document
+            .getElementById(
+                "whatHappened"
+            )
+            .value = "";
 
-                        });
+
+        document
+            .getElementById(
+                "powerNextButton"
+            )
+            .disabled = true;
+
+
+        showScreen(1);
+
+    }
+
+
+    function showSafety() {
+
+        document
+            .getElementById(
+                "safetyModal"
+            )
+            .classList.add("show");
+
+    }
+
+
+    function showAbout() {
+
+        document
+            .getElementById(
+                "aboutModal"
+            )
+            .classList.add("show");
+
+    }
+
+
+    function closeModal(id) {
+
+        document
+            .getElementById(id)
+            .classList.remove("show");
+
+    }
+
+
+    document
+        .querySelectorAll(".modal")
+        .forEach(function(modal) {
+
+            modal.addEventListener(
+                "click",
+                function(event) {
+
+                    if (
+                        event.target === modal
+                    ) {
+
+                        modal.classList.remove(
+                            "show"
+                        );
+
+                    }
 
                 }
+            );
+
+        });
+
+
+    document.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (
+                event.key === "Escape"
+            ) {
+
+                document
+                    .querySelectorAll(
+                        ".modal.show"
+                    )
+                    .forEach(function(modal) {
+
+                        modal.classList.remove(
+                            "show"
+                        );
+
+                    });
 
             }
-        );
+
+        }
+    );
 
 
-        /* =========================
-           INITIALIZE
-        ========================= */
+    document.addEventListener(
+        "DOMContentLoaded",
+        function() {
 
-        document.addEventListener(
-            "DOMContentLoaded",
-            function() {
+            showScreen(1);
 
-                showScreen(1);
+        }
+    );
 
-            }
-        );
-
-    </script>
+</script>
 
 </body>
 </html>
