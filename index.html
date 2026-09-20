@@ -2367,11 +2367,18 @@
 <script>
 
 /* =========================================================
-   GOOGLE APPS SCRIPT
+   SUPABASE EDGE FUNCTION
 ========================================================= */
 
-const APPSCRIPT_URL =
-    "https://script.google.com/macros/s/AKfycbyFngxXqFnjEXRrYBZGo-5IXEO6d7fU1Xa6wup3LX8zMX8BrsE0nfA03DALSMTPCoAczg/exec";
+const SUPABASE_DIAGNOSE_URL =
+    "https://cnjykckejgtfrmckrjbs.supabase.co/functions/v1/diagnose";
+
+/*
+ * This is the Supabase publishable/anon key.
+ * NEVER put the service_role/secret key in this HTML.
+ */
+const SUPABASE_ANON_KEY =
+    "sb_publishable_c4J9-DLvIUn_3tR8oN_EjA_c4FKo2iF";
 
 
 /* =========================================================
@@ -3512,24 +3519,22 @@ function generateLocalDiagnosis() {
 
 
 /* =========================================================
-   SERVER DIAGNOSIS
+   SUPABASE SERVER DIAGNOSIS
 ========================================================= */
 
 async function requestServerDiagnosis() {
 
     const payload = {
 
-        action:
-            "diagnose",
-
-        timestamp:
-            new Date().toISOString(),
-
         device:
-            DEVICE_NAMES[
-                appState.device
-            ] ||
+            DEVICE_NAMES[appState.device] ||
             appState.device,
+
+        deviceKey:
+            appState.device,
+
+        powerState:
+            appState.powerState,
 
         powerStatus:
             appState.powerLabel,
@@ -3538,9 +3543,7 @@ async function requestServerDiagnosis() {
             appState.problem,
 
         whenStarted:
-            WHEN_NAMES[
-                appState.whenStarted
-            ] ||
+            WHEN_NAMES[appState.whenStarted] ||
             "",
 
         whatHappened:
@@ -3552,7 +3555,7 @@ async function requestServerDiagnosis() {
     const response =
         await fetch(
 
-            APPSCRIPT_URL,
+            SUPABASE_DIAGNOSE_URL,
 
             {
 
@@ -3562,14 +3565,18 @@ async function requestServerDiagnosis() {
                 headers: {
 
                     "Content-Type":
-                        "text/plain;charset=utf-8"
+                        "application/json",
+
+                    "apikey":
+                        SUPABASE_ANON_KEY,
+
+                    "Authorization":
+                        "Bearer " + SUPABASE_ANON_KEY
 
                 },
 
                 body:
-                    JSON.stringify(
-                        payload
-                    )
+                    JSON.stringify(payload)
 
             }
 
@@ -3578,49 +3585,37 @@ async function requestServerDiagnosis() {
 
     if (!response.ok) {
 
+        const errorText =
+            await response.text();
+
         throw new Error(
-            "API HTTP " +
-            response.status
+            "Supabase API error " +
+            response.status +
+            ": " +
+            errorText
         );
 
     }
 
 
-    const text =
-        await response.text();
+    const data =
+        await response.json();
 
 
-    if (!text) {
+    if (
+        !data ||
+        !data.title ||
+        !Array.isArray(data.causes)
+    ) {
 
         throw new Error(
-            "Empty API response"
+            "Supabase returned an invalid diagnosis."
         );
 
     }
 
 
-    let data;
-
-
-    try {
-
-        data =
-            JSON.parse(text);
-
-    }
-
-    catch {
-
-        throw new Error(
-            "API did not return JSON"
-        );
-
-    }
-
-
-    return extractDiagnosis(
-        data
-    );
+    return normalizeDiagnosis(data);
 
 }
 
@@ -4860,185 +4855,115 @@ async function startDiagnosis() {
         true;
 
 
-    let diagnosis =
-        null;
-
-
-    /*
-     * TRY APPS SCRIPT FIRST
-     */
-
     try {
 
-        diagnosis =
+        const diagnosis =
             await requestServerDiagnosis();
+
+
+        if (
+            !isValidDiagnosis(diagnosis)
+        ) {
+
+            throw new Error(
+                "Supabase returned an incomplete diagnosis."
+            );
+
+        }
+
+
+        diagnosis.causes =
+            normalizeCauses(
+                diagnosis.causes
+            );
+
+
+        appState.diagnosis =
+            diagnosis;
+
+
+        renderDiagnosis(
+            diagnosis
+        );
 
     }
 
     catch (error) {
 
-        console.warn(
-            "Server diagnosis unavailable:",
+        console.error(
+            "Supabase diagnosis failed:",
             error
         );
 
+        content.innerHTML = `
+
+            <div
+                style="
+                    text-align:center;
+                    padding:60px 20px;
+                "
+            >
+
+                <div
+                    style="
+                        font-size:48px;
+                        margin-bottom:16px;
+                    "
+                >
+                    ⚠️
+                </div>
+
+                <h3
+                    style="
+                        font-size:24px;
+                        margin-bottom:10px;
+                    "
+                >
+                    Unable to analyze the problem
+                </h3>
+
+                <p
+                    style="
+                        color:#64748b;
+                        max-width:600px;
+                        margin:0 auto 22px;
+                        line-height:1.6;
+                    "
+                >
+                    FixIt could not connect to the diagnosis
+                    server. Please check your internet connection
+                    and try again.
+                </p>
+
+                <button
+                    class="btn btn-primary"
+                    onclick="startDiagnosis()"
+                >
+                    Try Again
+                </button>
+
+            </div>
+
+        `;
+
     }
 
+    finally {
 
-    /*
-     * LOCAL FALLBACK
-     */
-
-    if (
-        !isValidDiagnosis(
-            diagnosis
-        )
-    ) {
-
-        diagnosis =
-            generateLocalDiagnosis();
+        button.disabled =
+            false;
 
     }
-
-
-    /*
-     * GUARANTEE 3-5 CAUSES
-     */
-
-    diagnosis.causes =
-        normalizeCauses(
-            diagnosis.causes
-        );
-
-
-    appState.diagnosis =
-        diagnosis;
-
-
-    renderDiagnosis(
-        diagnosis
-    );
-
-
-    /*
-     * SAVE RESULT
-     */
-
-    saveDiagnosis(
-        diagnosis
-    );
-
-
-    button.disabled =
-        false;
 
 }
 
 
 /* =========================================================
-   SAVE TO GOOGLE SHEETS
+   DATABASE SAVING
+=========================================================
+   The Supabase Edge Function saves every successful diagnosis
+   directly into public.diagnosis_requests.
 ========================================================= */
-
-function saveDiagnosis(
-    diagnosis
-) {
-
-    const data = {
-
-        action:
-            "save",
-
-        timestamp:
-            new Date().toISOString(),
-
-        device:
-            DEVICE_NAMES[
-                appState.device
-            ] ||
-            appState.device,
-
-        powerStatus:
-            appState.powerLabel,
-
-        problem:
-            appState.problem,
-
-        whenStarted:
-            WHEN_NAMES[
-                appState.whenStarted
-            ] ||
-            "",
-
-        whatHappened:
-            appState.whatHappened,
-
-        diagnosis:
-            diagnosis.title,
-
-        severity:
-            diagnosis.severity,
-
-        causes:
-            diagnosis.causes
-                .map(
-                    cause =>
-                        cause.title +
-                        ": " +
-                        cause.description
-                )
-                .join(
-                    " | "
-                ),
-
-        recommendedSteps:
-            (
-                diagnosis.steps ||
-                []
-            )
-            .join(
-                " | "
-            )
-
-    };
-
-
-    fetch(
-
-        APPSCRIPT_URL,
-
-        {
-
-            method:
-                "POST",
-
-            headers: {
-
-                "Content-Type":
-                    "text/plain;charset=utf-8"
-
-            },
-
-            body:
-                JSON.stringify(
-                    data
-                )
-
-        }
-
-    )
-    .catch(
-        error => {
-
-            console.warn(
-                "Save failed:",
-                error
-            );
-
-        }
-    );
-
-}
-
 
 /* =========================================================
    PRINT
