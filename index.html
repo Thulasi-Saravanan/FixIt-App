@@ -1801,6 +1801,82 @@
             }
         }
 
+        /* =====================================================
+           DIAGNOSIS HISTORY
+        ====================================================== */
+
+        .history-btn {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .history-empty {
+            text-align: center;
+            padding: 30px 15px;
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .history-list {
+            display: grid;
+            gap: 12px;
+            margin-top: 18px;
+            max-height: 55vh;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 16px;
+            background: #f8fafc;
+        }
+
+        .history-item-title {
+            font-weight: 800;
+            font-size: 17px;
+            margin-bottom: 6px;
+        }
+
+        .history-item-meta {
+            color: #64748b;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .history-item-problem {
+            color: #334155;
+            line-height: 1.5;
+        }
+
+        .history-item-actions {
+            margin-top: 12px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .history-delete {
+            border: 0;
+            background: transparent;
+            color: #dc2626;
+            cursor: pointer;
+            font-weight: 700;
+            padding: 6px 0;
+        }
+
+        .history-detail {
+            line-height: 1.65;
+        }
+
+        .history-detail h4 {
+            margin: 18px 0 8px;
+        }
+
+        .history-detail ul {
+            padding-left: 22px;
+        }
+
     </style>
 
 </head>
@@ -2660,6 +2736,14 @@
             <div class="profile-email" id="profileEmail"></div>
 
             <button
+                class="btn btn-primary history-btn"
+                type="button"
+                onclick="openHistory()"
+            >
+                My Diagnosis History
+            </button>
+
+            <button
                 class="btn btn-secondary"
                 type="button"
                 onclick="handleLogout()"
@@ -2667,6 +2751,39 @@
                 Log Out
             </button>
         </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     DIAGNOSIS HISTORY MODAL
+========================================================= -->
+
+<div
+    class="modal"
+    id="historyModal"
+    onclick="closeModalOutside(event,'historyModal')"
+>
+
+    <div class="modal-content">
+
+        <button
+            class="close-modal"
+            onclick="closeModal('historyModal')"
+            aria-label="Close history"
+        >
+            ×
+        </button>
+
+        <h2>📋 My Diagnosis History</h2>
+
+        <p id="historySubtitle" style="color:#64748b; line-height:1.6;">
+            Your diagnoses saved on this browser.
+        </p>
+
+        <div id="historyContent"></div>
 
     </div>
 
@@ -3224,6 +3341,258 @@ async function initializeFixItAuth() {
     }
 }
 
+
+/* =========================================================
+   LOCAL DIAGNOSIS HISTORY
+   History is keyed by the logged-in Supabase user ID.
+   This does NOT change the existing diagnosis API/database.
+========================================================= */
+
+function historyStorageKey() {
+
+    if (!fixitCurrentUser?.id) return null;
+
+    return "fixit_diagnosis_history_" + fixitCurrentUser.id;
+}
+
+function getDiagnosisHistory() {
+
+    const key = historyStorageKey();
+
+    if (!key) return [];
+
+    try {
+        const value = localStorage.getItem(key);
+        const parsed = value ? JSON.parse(value) : [];
+        return Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+        console.error("Unable to read FixIt history:", error);
+        return [];
+    }
+}
+
+function saveDiagnosisToHistory(diagnosis) {
+
+    const key = historyStorageKey();
+
+    if (!key || !diagnosis) return;
+
+    const history = getDiagnosisHistory();
+
+    const entry = {
+        id: Date.now().toString(),
+        createdAt: new Date().toISOString(),
+        device: DEVICE_NAMES[appState.device] || appState.device || "Device",
+        problem: appState.problem || "",
+        whenStarted: WHEN_NAMES[appState.whenStarted] || appState.whenStarted || "",
+        whatHappened: appState.whatHappened || "",
+        diagnosis: JSON.parse(JSON.stringify(diagnosis))
+    };
+
+    history.unshift(entry);
+
+    // Keep the most recent 50 diagnoses per account on this browser.
+    localStorage.setItem(key, JSON.stringify(history.slice(0, 50)));
+}
+
+function formatHistoryDate(value) {
+
+    try {
+        return new Date(value).toLocaleString(undefined, {
+            dateStyle: "medium",
+            timeStyle: "short"
+        });
+    } catch (_) {
+        return "Unknown date";
+    }
+}
+
+function openHistory() {
+
+    if (!fixitCurrentUser) {
+        closeModal("authModal");
+        openAuthModal();
+        return;
+    }
+
+    closeModal("authModal");
+
+    const modal = document.getElementById("historyModal");
+    const content = document.getElementById("historyContent");
+
+    if (!modal || !content) return;
+
+    renderHistory();
+    modal.classList.add("show");
+}
+
+function renderHistory() {
+
+    const content = document.getElementById("historyContent");
+
+    if (!content) return;
+
+    const history = getDiagnosisHistory();
+
+    if (!history.length) {
+        content.innerHTML = `
+            <div class="history-empty">
+                <div style="font-size:42px; margin-bottom:10px;">📋</div>
+                <strong>No diagnosis history yet.</strong>
+                <div>Run a diagnosis while signed in and it will appear here.</div>
+            </div>
+        `;
+        return;
+    }
+
+    content.innerHTML = `
+        <div class="history-list">
+            ${history.map((entry, index) => {
+                const diagnosis = entry.diagnosis || {};
+                const severity = normalizeSeverity(diagnosis.severity);
+
+                return `
+                    <div class="history-item">
+                        <div class="history-item-title">
+                            ${escapeHTML(diagnosis.title || "Troubleshooting Result")}
+                        </div>
+
+                        <div class="history-item-meta">
+                            ${escapeHTML(entry.device || "Device")} ·
+                            ${escapeHTML(formatHistoryDate(entry.createdAt))} ·
+                            ${escapeHTML(severity.toUpperCase())}
+                        </div>
+
+                        <div class="history-item-problem">
+                            <strong>Problem:</strong>
+                            ${escapeHTML(entry.problem || "No problem description")}
+                        </div>
+
+                        <div class="history-item-actions">
+                            <button
+                                class="btn btn-secondary"
+                                type="button"
+                                onclick="viewHistoryEntry(${index})"
+                            >
+                                View Diagnosis
+                            </button>
+
+                            <button
+                                class="history-delete"
+                                type="button"
+                                onclick="deleteHistoryEntry(${index})"
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join("")}
+        </div>
+    `;
+}
+
+function viewHistoryEntry(index) {
+
+    const history = getDiagnosisHistory();
+    const entry = history[index];
+
+    if (!entry) return;
+
+    const diagnosis = entry.diagnosis || {};
+    const causes = normalizeCauses(diagnosis.causes);
+    const steps = Array.isArray(diagnosis.steps) ? diagnosis.steps : [];
+    const nextChecks = Array.isArray(diagnosis.nextChecks) ? diagnosis.nextChecks : [];
+
+    const content = document.getElementById("historyContent");
+    if (!content) return;
+
+    content.innerHTML = `
+        <button
+            class="btn btn-secondary"
+            type="button"
+            onclick="renderHistory()"
+            style="margin-bottom:16px;"
+        >
+            ← Back to History
+        </button>
+
+        <div class="history-detail">
+            <h3>${escapeHTML(diagnosis.title || "Troubleshooting Result")}</h3>
+
+            <p style="color:#64748b;">
+                ${escapeHTML(entry.device || "Device")} ·
+                ${escapeHTML(formatHistoryDate(entry.createdAt))}
+            </p>
+
+            <h4>Problem</h4>
+            <p>${escapeHTML(entry.problem || "No problem description")}</p>
+
+            ${entry.whenStarted ? `
+                <h4>When it started</h4>
+                <p>${escapeHTML(entry.whenStarted)}</p>
+            ` : ""}
+
+            ${entry.whatHappened ? `
+                <h4>What happened</h4>
+                <p>${escapeHTML(entry.whatHappened)}</p>
+            ` : ""}
+
+            <h4>Diagnosis</h4>
+            <p>${escapeHTML(diagnosis.description || "")}</p>
+
+            ${causes.length ? `
+                <h4>Likely causes</h4>
+                <ul>
+                    ${causes.map(cause => `
+                        <li>
+                            <strong>${escapeHTML(cause.title)}</strong>
+                            — ${escapeHTML(cause.description)}
+                        </li>
+                    `).join("")}
+                </ul>
+            ` : ""}
+
+            ${steps.length ? `
+                <h4>Recommended steps</h4>
+                <ul>
+                    ${steps.map(step => `<li>${escapeHTML(step)}</li>`).join("")}
+                </ul>
+            ` : ""}
+
+            ${nextChecks.length ? `
+                <h4>Next checks</h4>
+                <ul>
+                    ${nextChecks.map(item => `<li>${escapeHTML(item)}</li>`).join("")}
+                </ul>
+            ` : ""}
+
+            ${diagnosis.safety ? `
+                <h4>Safety</h4>
+                <p>${escapeHTML(diagnosis.safety)}</p>
+            ` : ""}
+        </div>
+    `;
+}
+
+function deleteHistoryEntry(index) {
+
+    const key = historyStorageKey();
+
+    if (!key) return;
+
+    const history = getDiagnosisHistory();
+
+    if (!history[index]) return;
+
+    if (!confirm("Delete this diagnosis from your FixIt history?")) {
+        return;
+    }
+
+    history.splice(index, 1);
+    localStorage.setItem(key, JSON.stringify(history));
+    renderHistory();
+}
 
 /* =========================================================
    SUPABASE EDGE FUNCTION
@@ -5742,6 +6111,12 @@ async function startDiagnosis() {
         renderDiagnosis(
             diagnosis
         );
+
+        // Save a local history copy only when a user is signed in.
+        // The existing Supabase diagnosis request remains unchanged.
+        if (fixitCurrentUser) {
+            saveDiagnosisToHistory(diagnosis);
+        }
 
     }
 
