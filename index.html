@@ -2374,7 +2374,8 @@ const SUPABASE_DIAGNOSE_URL =
     "https://cnjykckejgtfrmckrjbs.supabase.co/functions/v1/diagnose";
 
 /*
- * This is the Supabase publishable/anon key.
+ * This is the Supabase publishable key.
+ * It is sent through the `apikey` header only.
  * NEVER put the service_role/secret key in this HTML.
  */
 const SUPABASE_ANON_KEY =
@@ -3568,10 +3569,7 @@ async function requestServerDiagnosis() {
                         "application/json",
 
                     "apikey":
-                        SUPABASE_ANON_KEY,
-
-                    "Authorization":
-                        "Bearer " + SUPABASE_ANON_KEY
+                        SUPABASE_ANON_KEY
 
                 },
 
