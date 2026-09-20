@@ -1631,6 +1631,176 @@
 
         }
 
+
+        /* =====================================================
+           ACCOUNT / AUTHENTICATION
+        ===================================================== */
+
+        .account-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .account-btn {
+            border: 1px solid rgba(255,255,255,.18);
+            background: rgba(255,255,255,.08);
+            color: #fff;
+            border-radius: 10px;
+            padding: 9px 14px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: .2s ease;
+        }
+
+        .account-btn:hover {
+            background: rgba(255,255,255,.16);
+        }
+
+        .account-email {
+            max-width: 220px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: #cbd5e1;
+            font-size: 13px;
+        }
+
+        .auth-modal-content {
+            width: min(430px, 94vw);
+            position: relative;
+        }
+
+        .auth-tabs {
+            display: flex;
+            gap: 6px;
+            margin: 18px 0 20px;
+            padding: 4px;
+            background: #f1f5f9;
+            border-radius: 10px;
+        }
+
+        .auth-tab {
+            flex: 1;
+            border: 0;
+            background: transparent;
+            padding: 10px;
+            border-radius: 8px;
+            color: #64748b;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .auth-tab.active {
+            background: #fff;
+            color: var(--primary);
+            box-shadow: 0 1px 4px rgba(15,23,42,.08);
+        }
+
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
+        }
+
+        .auth-field {
+            margin-bottom: 14px;
+        }
+
+        .auth-field label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #334155;
+        }
+
+        .auth-field input {
+            width: 100%;
+            padding: 12px 13px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            font: inherit;
+            outline: none;
+        }
+
+        .auth-field input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37,99,235,.10);
+        }
+
+        .auth-submit {
+            width: 100%;
+            margin-top: 4px;
+        }
+
+        .auth-link {
+            border: 0;
+            background: transparent;
+            color: var(--primary);
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            padding: 8px 0;
+        }
+
+        .auth-message {
+            display: none;
+            margin: 12px 0;
+            padding: 10px 12px;
+            border-radius: 9px;
+            font-size: 13px;
+            line-height: 1.45;
+        }
+
+        .auth-message.show {
+            display: block;
+        }
+
+        .auth-message.success {
+            background: #f0fdf4;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        .auth-message.error {
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .profile-panel {
+            display: none;
+            margin-top: 12px;
+            padding: 14px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: #f8fafc;
+        }
+
+        .profile-panel.show {
+            display: block;
+        }
+
+        .profile-email {
+            font-weight: 700;
+            word-break: break-word;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 700px) {
+            .account-email {
+                display: none;
+            }
+
+            .account-btn {
+                padding: 8px 11px;
+            }
+        }
+
     </style>
 
 </head>
@@ -1708,8 +1878,23 @@
     </div>
 
 
-    <div class="nav-text">
-        Intelligent Troubleshooting Platform
+    <div class="account-area">
+
+        <div
+            class="account-email"
+            id="accountEmail"
+            aria-live="polite"
+        ></div>
+
+        <button
+            class="account-btn"
+            id="accountButton"
+            type="button"
+            onclick="openAuthModal()"
+        >
+            Log In
+        </button>
+
     </div>
 
 </nav>
@@ -2271,6 +2456,224 @@
 
 
 <!-- =========================================================
+     AUTHENTICATION MODAL
+     Added separately from the existing diagnosis system.
+========================================================= -->
+
+<div
+    class="modal"
+    id="authModal"
+    onclick="closeModalOutside(event,'authModal')"
+>
+
+    <div class="modal-content auth-modal-content">
+
+        <button
+            class="close-modal"
+            onclick="closeModal('authModal')"
+            aria-label="Close"
+        >
+            ×
+        </button>
+
+        <h2 id="authTitle">Welcome to FixIt</h2>
+
+        <p id="authSubtitle">
+            Sign in to keep your FixIt account available across sessions.
+        </p>
+
+        <div class="auth-tabs">
+            <button
+                class="auth-tab active"
+                id="loginTab"
+                type="button"
+                onclick="showAuthForm('login')"
+            >
+                Log In
+            </button>
+
+            <button
+                class="auth-tab"
+                id="signupTab"
+                type="button"
+                onclick="showAuthForm('signup')"
+            >
+                Sign Up
+            </button>
+        </div>
+
+        <div
+            class="auth-message"
+            id="authMessage"
+            role="status"
+            aria-live="polite"
+        ></div>
+
+        <form
+            class="auth-form active"
+            id="loginForm"
+            onsubmit="handleLogin(event)"
+        >
+
+            <div class="auth-field">
+                <label for="loginEmail">Email</label>
+                <input
+                    id="loginEmail"
+                    type="email"
+                    autocomplete="email"
+                    required
+                    placeholder="you@example.com"
+                >
+            </div>
+
+            <div class="auth-field">
+                <label for="loginPassword">Password</label>
+                <input
+                    id="loginPassword"
+                    type="password"
+                    autocomplete="current-password"
+                    required
+                    minlength="6"
+                    placeholder="Your password"
+                >
+            </div>
+
+            <button
+                class="btn btn-primary auth-submit"
+                id="loginSubmit"
+                type="submit"
+            >
+                Log In
+            </button>
+
+            <button
+                class="auth-link"
+                type="button"
+                onclick="showAuthForm('reset')"
+            >
+                Forgot password?
+            </button>
+
+        </form>
+
+        <form
+            class="auth-form"
+            id="signupForm"
+            onsubmit="handleSignup(event)"
+        >
+
+            <div class="auth-field">
+                <label for="signupName">Name</label>
+                <input
+                    id="signupName"
+                    type="text"
+                    autocomplete="name"
+                    required
+                    maxlength="80"
+                    placeholder="Your name"
+                >
+            </div>
+
+            <div class="auth-field">
+                <label for="signupEmail">Email</label>
+                <input
+                    id="signupEmail"
+                    type="email"
+                    autocomplete="email"
+                    required
+                    placeholder="you@example.com"
+                >
+            </div>
+
+            <div class="auth-field">
+                <label for="signupPassword">Password</label>
+                <input
+                    id="signupPassword"
+                    type="password"
+                    autocomplete="new-password"
+                    required
+                    minlength="6"
+                    placeholder="At least 6 characters"
+                >
+            </div>
+
+            <div class="auth-field">
+                <label for="signupConfirmPassword">Confirm password</label>
+                <input
+                    id="signupConfirmPassword"
+                    type="password"
+                    autocomplete="new-password"
+                    required
+                    minlength="6"
+                    placeholder="Enter password again"
+                >
+            </div>
+
+            <button
+                class="btn btn-primary auth-submit"
+                id="signupSubmit"
+                type="submit"
+            >
+                Create Account
+            </button>
+
+        </form>
+
+        <form
+            class="auth-form"
+            id="resetForm"
+            onsubmit="handlePasswordReset(event)"
+        >
+
+            <div class="auth-field">
+                <label for="resetEmail">Email</label>
+                <input
+                    id="resetEmail"
+                    type="email"
+                    autocomplete="email"
+                    required
+                    placeholder="you@example.com"
+                >
+            </div>
+
+            <button
+                class="btn btn-primary auth-submit"
+                type="submit"
+            >
+                Send Reset Email
+            </button>
+
+            <button
+                class="auth-link"
+                type="button"
+                onclick="showAuthForm('login')"
+            >
+                Back to login
+            </button>
+
+        </form>
+
+        <div
+            class="profile-panel"
+            id="profilePanel"
+        >
+            <div class="profile-email" id="profileEmail"></div>
+
+            <button
+                class="btn btn-secondary"
+                type="button"
+                onclick="handleLogout()"
+            >
+                Log Out
+            </button>
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
      SAFETY MODAL
 ========================================================= -->
 
@@ -2364,7 +2767,463 @@
 
 
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
+
+/* =========================================================
+   FIXIT AUTHENTICATION
+   This uses the same Supabase project for Auth only.
+   The existing diagnosis request function below is unchanged.
+========================================================= */
+
+const FIXIT_AUTH_URL =
+    "https://cnjykckejgtfrmckrjbs.supabase.co";
+
+const FIXIT_AUTH_KEY =
+    "sb_publishable_c4J9-DLvIUn_3tR8oN_EjA_c4FKo2iF";
+
+const fixitAuthClient =
+    window.supabase.createClient(
+        FIXIT_AUTH_URL,
+        FIXIT_AUTH_KEY
+    );
+
+let fixitCurrentUser = null;
+
+function authMessage(message, type = "success") {
+
+    const box =
+        document.getElementById("authMessage");
+
+    if (!box) return;
+
+    box.textContent = message;
+    box.className =
+        "auth-message show " + type;
+}
+
+function clearAuthMessage() {
+
+    const box =
+        document.getElementById("authMessage");
+
+    if (!box) return;
+
+    box.textContent = "";
+    box.className = "auth-message";
+}
+
+function showAuthForm(formName) {
+
+    document
+        .querySelectorAll(".auth-form")
+        .forEach(form =>
+            form.classList.remove("active")
+        );
+
+    document
+        .getElementById("loginTab")
+        .classList.remove("active");
+
+    document
+        .getElementById("signupTab")
+        .classList.remove("active");
+
+    clearAuthMessage();
+
+    const title =
+        document.getElementById("authTitle");
+
+    const subtitle =
+        document.getElementById("authSubtitle");
+
+    if (formName === "signup") {
+
+        document
+            .getElementById("signupForm")
+            .classList.add("active");
+
+        document
+            .getElementById("signupTab")
+            .classList.add("active");
+
+        title.textContent = "Create your FixIt account";
+        subtitle.textContent =
+            "Create an account to access your FixIt profile.";
+
+        return;
+    }
+
+    if (formName === "reset") {
+
+        document
+            .getElementById("resetForm")
+            .classList.add("active");
+
+        title.textContent = "Reset your password";
+        subtitle.textContent =
+            "Enter your email and FixIt will send a password reset link.";
+
+        return;
+    }
+
+    document
+        .getElementById("loginForm")
+        .classList.add("active");
+
+    document
+        .getElementById("loginTab")
+        .classList.add("active");
+
+    title.textContent = "Welcome back to FixIt";
+    subtitle.textContent =
+        "Sign in to your FixIt account.";
+}
+
+function openAuthModal() {
+
+    const modal =
+        document.getElementById("authModal");
+
+    if (!modal) return;
+
+    clearAuthMessage();
+
+    if (fixitCurrentUser) {
+
+        document
+            .getElementById("loginForm")
+            .classList.remove("active");
+
+        document
+            .getElementById("signupForm")
+            .classList.remove("active");
+
+        document
+            .getElementById("resetForm")
+            .classList.remove("active");
+
+        document
+            .getElementById("profilePanel")
+            .classList.add("show");
+
+        document.getElementById("authTitle").textContent =
+            "Your FixIt Account";
+
+        document.getElementById("authSubtitle").textContent =
+            "You are currently signed in.";
+
+        document.getElementById("profileEmail").textContent =
+            fixitCurrentUser.email || "Signed-in user";
+
+    } else {
+
+        document
+            .getElementById("profilePanel")
+            .classList.remove("show");
+
+        showAuthForm("login");
+    }
+
+    modal.classList.add("show");
+}
+
+function updateAccountUI(user) {
+
+    fixitCurrentUser = user || null;
+
+    const button =
+        document.getElementById("accountButton");
+
+    const email =
+        document.getElementById("accountEmail");
+
+    if (!button) return;
+
+    if (user) {
+        button.textContent = "Account";
+        button.title = user.email || "Account";
+
+        if (email) {
+            email.textContent = user.email || "";
+        }
+    } else {
+        button.textContent = "Log In";
+        button.title = "Log in or create an account";
+
+        if (email) {
+            email.textContent = "";
+        }
+    }
+}
+
+async function handleLogin(event) {
+
+    event.preventDefault();
+    clearAuthMessage();
+
+    const email =
+        document.getElementById("loginEmail").value.trim();
+
+    const password =
+        document.getElementById("loginPassword").value;
+
+    const button =
+        document.getElementById("loginSubmit");
+
+    button.disabled = true;
+    button.textContent = "Logging in...";
+
+    try {
+
+        const { data, error } =
+            await fixitAuthClient.auth.signInWithPassword({
+                email,
+                password
+            });
+
+        if (error) throw error;
+
+        updateAccountUI(data.user);
+
+        authMessage("Login successful.", "success");
+
+        setTimeout(() => {
+            closeModal("authModal");
+        }, 700);
+
+    } catch (error) {
+
+        authMessage(
+            error?.message ||
+            "Unable to log in. Please check your email and password.",
+            "error"
+        );
+
+    } finally {
+
+        button.disabled = false;
+        button.textContent = "Log In";
+    }
+}
+
+async function handleSignup(event) {
+
+    event.preventDefault();
+    clearAuthMessage();
+
+    const name =
+        document.getElementById("signupName").value.trim();
+
+    const email =
+        document.getElementById("signupEmail").value.trim();
+
+    const password =
+        document.getElementById("signupPassword").value;
+
+    const confirmPassword =
+        document.getElementById("signupConfirmPassword").value;
+
+    if (password !== confirmPassword) {
+        authMessage(
+            "Passwords do not match.",
+            "error"
+        );
+        return;
+    }
+
+    const button =
+        document.getElementById("signupSubmit");
+
+    button.disabled = true;
+    button.textContent = "Creating account...";
+
+    try {
+
+        const { data, error } =
+            await fixitAuthClient.auth.signUp({
+                email,
+                password,
+                options: {
+                    data: {
+                        full_name: name
+                    }
+                }
+            });
+
+        if (error) throw error;
+
+        if (data.session && data.user) {
+
+            updateAccountUI(data.user);
+
+            authMessage(
+                "Account created successfully.",
+                "success"
+            );
+
+            setTimeout(() => {
+                closeModal("authModal");
+            }, 900);
+
+        } else {
+
+            showAuthForm("login");
+
+            authMessage(
+                "Account created. Check your email to confirm your account, then log in.",
+                "success"
+            );
+        }
+
+    } catch (error) {
+
+        authMessage(
+            error?.message ||
+            "Unable to create your account.",
+            "error"
+        );
+
+    } finally {
+
+        button.disabled = false;
+        button.textContent = "Create Account";
+    }
+}
+
+async function handlePasswordReset(event) {
+
+    event.preventDefault();
+    clearAuthMessage();
+
+    const email =
+        document.getElementById("resetEmail").value.trim();
+
+    try {
+
+        const redirectUrl =
+            window.location.origin +
+            window.location.pathname;
+
+        const { error } =
+            await fixitAuthClient.auth.resetPasswordForEmail(
+                email,
+                {
+                    redirectTo: redirectUrl
+                }
+            );
+
+        if (error) throw error;
+
+        authMessage(
+            "If an account exists for that email, a password reset link has been sent.",
+            "success"
+        );
+
+    } catch (error) {
+
+        authMessage(
+            error?.message ||
+            "Unable to send the reset email.",
+            "error"
+        );
+    }
+}
+
+async function handleLogout() {
+
+    try {
+        const { error } =
+            await fixitAuthClient.auth.signOut();
+
+        if (error) throw error;
+
+        updateAccountUI(null);
+        closeModal("authModal");
+
+    } catch (error) {
+
+        authMessage(
+            error?.message ||
+            "Unable to log out.",
+            "error"
+        );
+    }
+}
+
+async function handleRecoverySession() {
+
+    const hash = window.location.hash || "";
+
+    if (!hash.includes("type=recovery")) {
+        return;
+    }
+
+    openAuthModal();
+
+    showAuthForm("login");
+
+    const newPassword =
+        window.prompt("Enter your new FixIt password:");
+
+    if (!newPassword) {
+        return;
+    }
+
+    if (newPassword.length < 6) {
+        alert("Password must be at least 6 characters.");
+        return;
+    }
+
+    try {
+
+        const { error } =
+            await fixitAuthClient.auth.updateUser({
+                password: newPassword
+            });
+
+        if (error) throw error;
+
+        closeModal("authModal");
+
+        alert("Your password has been updated successfully.");
+
+    } catch (error) {
+
+        alert(
+            error?.message ||
+            "Unable to update your password."
+        );
+    }
+}
+
+async function initializeFixItAuth() {
+
+    try {
+
+        const { data } =
+            await fixitAuthClient.auth.getSession();
+
+        updateAccountUI(data?.session?.user || null);
+
+        fixitAuthClient.auth.onAuthStateChange(
+            (_event, session) => {
+                updateAccountUI(session?.user || null);
+            }
+        );
+
+        await handleRecoverySession();
+
+    } catch (error) {
+
+        console.error(
+            "FixIt authentication initialization error:",
+            error
+        );
+    }
+}
+
 
 /* =========================================================
    SUPABASE EDGE FUNCTION
@@ -5111,6 +5970,8 @@ document.addEventListener(
     function() {
 
         updateProgress(1);
+
+        initializeFixItAuth();
 
     }
 );
