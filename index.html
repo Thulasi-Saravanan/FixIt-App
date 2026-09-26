@@ -2185,14 +2185,11 @@
         <div class="dashboard-history-header">
             <div>
                 <h2 class="dashboard-history-title">📋 Diagnosis History</h2>
-                <p class="dashboard-history-subtitle" id="dashboardHistorySubtitle">
-                    Click the button to view your saved diagnoses.
-                </p>
+                <p class="dashboard-history-subtitle" id="dashboardHistorySubtitle">Sign in to see your recent diagnoses here.</p>
             </div>
-            <button type="button" class="btn btn-secondary" id="dashboardHistoryButton" onclick="openDashboardHistory()">
-                View History
-            </button>
+            <button type="button" class="btn btn-secondary" id="dashboardHistoryButton" onclick="openDashboardHistory()">View All History</button>
         </div>
+        <div id="dashboardHistoryContent"></div>
     </section>
 
 
@@ -3613,19 +3610,56 @@ function openDashboardHistory() {
 }
 
 function renderDashboardHistory() {
+    const content = document.getElementById("dashboardHistoryContent");
     const subtitle = document.getElementById("dashboardHistorySubtitle");
     const button = document.getElementById("dashboardHistoryButton");
-
-    if (!subtitle || !button) return;
+    if (!content) return;
 
     if (!fixitCurrentUser) {
-        subtitle.textContent = "Sign in to view your saved diagnoses.";
-        button.textContent = "Sign In";
+        if (subtitle) subtitle.textContent = "Sign in to see your recent diagnoses here.";
+        if (button) button.textContent = "Sign In";
+        content.innerHTML = `
+            <div class="dashboard-history-empty">
+                <div style="font-size:34px; margin-bottom:8px;">🔐</div>
+                <strong>Login to access your diagnosis history.</strong>
+                <div style="margin-top:6px;">Your saved diagnoses will appear on this dashboard.</div>
+            </div>`;
         return;
     }
 
-    subtitle.textContent = "Click View History to see your saved diagnoses.";
-    button.textContent = "View History";
+    if (subtitle) subtitle.textContent = "Your 5 most recent diagnoses are shown here.";
+    if (button) button.textContent = "View All History";
+
+    const fullHistory = getDiagnosisHistory();
+    const history = fullHistory.slice(0, 5);
+
+    if (!history.length) {
+        content.innerHTML = `
+            <div class="dashboard-history-empty">
+                <div style="font-size:34px; margin-bottom:8px;">📋</div>
+                <strong>No diagnoses yet.</strong>
+                <div style="margin-top:6px;">Run your first diagnosis while signed in and it will appear here.</div>
+            </div>`;
+        return;
+    }
+
+    content.innerHTML = `
+        <div class="dashboard-history-list">
+            ${history.map(entry => {
+                const diagnosis = entry.diagnosis || {};
+                const severity = normalizeSeverity(diagnosis.severity);
+                const globalIndex = fullHistory.findIndex(item => item.id === entry.id);
+                return `
+                    <div class="dashboard-history-item">
+                        <div class="dashboard-history-item-main">
+                            <div class="dashboard-history-item-title">${escapeHTML(diagnosis.title || "Troubleshooting Result")}</div>
+                            <div class="dashboard-history-item-meta">${escapeHTML(entry.device || "Device")} · ${escapeHTML(formatHistoryDate(entry.createdAt))} · ${escapeHTML(severity.toUpperCase())}</div>
+                            <div class="dashboard-history-item-problem">${escapeHTML(entry.problem || "No problem description")}</div>
+                        </div>
+                        <button type="button" class="btn btn-secondary" onclick="viewDashboardHistoryEntry(${globalIndex})">View</button>
+                    </div>`;
+            }).join("")}
+        </div>`;
 }
 
 function viewDashboardHistoryEntry(index) {
