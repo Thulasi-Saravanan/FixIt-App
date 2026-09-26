@@ -62,6 +62,167 @@
 
 
         /* =====================================================
+           SOLUTION IMAGE CARDS
+        ===================================================== */
+
+        .solution-step {
+            display: grid;
+            grid-template-columns: 190px 1fr;
+            gap: 20px;
+            align-items: center;
+            padding: 16px;
+            margin-bottom: 16px;
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            box-shadow: 0 5px 18px rgba(15, 23, 42, 0.06);
+            overflow: hidden;
+        }
+
+        .solution-visual {
+            position: relative;
+            cursor: zoom-in;
+            border-radius: 14px;
+            overflow: hidden;
+            background: #eff6ff;
+            border: 1px solid #dbeafe;
+        }
+
+        .solution-image {
+            width: 190px;
+            height: 135px;
+            object-fit: cover;
+            display: block;
+            transition: transform .2s ease;
+        }
+
+        .solution-visual:hover .solution-image {
+            transform: scale(1.04);
+        }
+
+        .solution-image-hint {
+            position: absolute;
+            left: 9px;
+            bottom: 8px;
+            padding: 5px 9px;
+            border-radius: 999px;
+            background: rgba(15, 23, 42, .82);
+            color: #fff;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .solution-step-number {
+            font-weight: 800;
+            color: var(--primary);
+            font-size: 13px;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+        }
+
+        .solution-step-title {
+            font-size: 17px;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 6px;
+        }
+
+        .solution-step-text {
+            line-height: 1.65;
+            color: #334155;
+        }
+
+        .solution-helper {
+            margin-top: 8px;
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .solution-photo-credit {
+            margin-top: 7px;
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        .solution-photo-credit a,
+        .solution-image-modal-caption a {
+            color: var(--primary);
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .solution-photo-credit a:hover,
+        .solution-image-modal-caption a:hover {
+            text-decoration: underline;
+        }
+
+        .real-solution-photo {
+            background: #f8fafc;
+        }
+
+        .solution-image-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(15, 23, 42, .78);
+        }
+
+        .solution-image-modal.open {
+            display: flex;
+        }
+
+        .solution-image-modal-content {
+            width: min(760px, 96vw);
+            max-height: 92vh;
+            padding: 14px;
+            border-radius: 20px;
+            background: #fff;
+            box-shadow: 0 24px 70px rgba(0,0,0,.28);
+        }
+
+        .solution-image-modal-content img {
+            width: 100%;
+            max-height: 72vh;
+            object-fit: contain;
+            display: block;
+            border-radius: 14px;
+            background: #eff6ff;
+        }
+
+        .solution-image-modal-caption {
+            padding: 12px 4px 2px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .solution-image-modal-close {
+            float: right;
+            border: 0;
+            background: #e2e8f0;
+            color: #0f172a;
+            border-radius: 10px;
+            padding: 7px 11px;
+            cursor: pointer;
+            font-weight: 800;
+        }
+
+        @media (max-width: 620px) {
+            .solution-step {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            .solution-image {
+                width: 100%;
+                height: 200px;
+            }
+        }
+
+        /* =====================================================
            NAVBAR
         ===================================================== */
 
@@ -1805,6 +1966,19 @@
            DIAGNOSIS HISTORY
         ====================================================== */
 
+        .dashboard-history { margin: 0 0 32px; padding: 24px; border: 1px solid #e2e8f0; border-radius: 20px; background: #fff; box-shadow: 0 10px 30px rgba(15,23,42,.06); }
+        .dashboard-history-header { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:18px; }
+        .dashboard-history-title { margin:0; font-size:22px; color:#0f172a; }
+        .dashboard-history-subtitle { margin:5px 0 0; color:#64748b; font-size:14px; }
+        .dashboard-history-list { display:grid; gap:12px; }
+        .dashboard-history-item { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:16px; border:1px solid #e2e8f0; border-radius:14px; background:#f8fafc; }
+        .dashboard-history-item-main { min-width:0; }
+        .dashboard-history-item-title { font-weight:700; color:#0f172a; margin-bottom:5px; }
+        .dashboard-history-item-meta { color:#64748b; font-size:13px; margin-bottom:6px; }
+        .dashboard-history-item-problem { color:#334155; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:700px; }
+        .dashboard-history-empty { padding:22px; text-align:center; border:1px dashed #cbd5e1; border-radius:14px; color:#64748b; background:#f8fafc; }
+        @media (max-width:700px) { .dashboard-history-header, .dashboard-history-item { align-items:stretch; flex-direction:column; } .dashboard-history-item-problem { max-width:100%; } }
+
         .history-btn {
             width: 100%;
             margin-bottom: 10px;
@@ -1999,6 +2173,23 @@
             causes and practical troubleshooting steps.
         </p>
 
+    </section>
+
+
+
+    <!-- =====================================================
+         DIAGNOSIS HISTORY DASHBOARD
+    ====================================================== -->
+
+    <section class="dashboard-history" id="dashboardHistorySection">
+        <div class="dashboard-history-header">
+            <div>
+                <h2 class="dashboard-history-title">📋 Diagnosis History</h2>
+                <p class="dashboard-history-subtitle" id="dashboardHistorySubtitle">Sign in to see your recent diagnoses here.</p>
+            </div>
+            <button type="button" class="btn btn-secondary" id="dashboardHistoryButton" onclick="openDashboardHistory()">View All History</button>
+        </div>
+        <div id="dashboardHistoryContent"></div>
     </section>
 
 
@@ -3073,6 +3264,8 @@ function updateAccountUI(user) {
             email.textContent = "";
         }
     }
+
+    renderDashboardHistory();
 }
 
 async function handleLogin(event) {
@@ -3393,6 +3586,7 @@ function saveDiagnosisToHistory(diagnosis) {
 
     // Keep the most recent 50 diagnoses per account on this browser.
     localStorage.setItem(key, JSON.stringify(history.slice(0, 50)));
+    renderDashboardHistory();
 }
 
 function formatHistoryDate(value) {
@@ -3405,6 +3599,72 @@ function formatHistoryDate(value) {
     } catch (_) {
         return "Unknown date";
     }
+}
+
+function openDashboardHistory() {
+    if (!fixitCurrentUser) {
+        openAuthModal();
+        return;
+    }
+    openHistory();
+}
+
+function renderDashboardHistory() {
+    const content = document.getElementById("dashboardHistoryContent");
+    const subtitle = document.getElementById("dashboardHistorySubtitle");
+    const button = document.getElementById("dashboardHistoryButton");
+    if (!content) return;
+
+    if (!fixitCurrentUser) {
+        if (subtitle) subtitle.textContent = "Sign in to see your recent diagnoses here.";
+        if (button) button.textContent = "Sign In";
+        content.innerHTML = `
+            <div class="dashboard-history-empty">
+                <div style="font-size:34px; margin-bottom:8px;">🔐</div>
+                <strong>Login to access your diagnosis history.</strong>
+                <div style="margin-top:6px;">Your saved diagnoses will appear on this dashboard.</div>
+            </div>`;
+        return;
+    }
+
+    if (subtitle) subtitle.textContent = "Your 5 most recent diagnoses are shown here.";
+    if (button) button.textContent = "View All History";
+
+    const fullHistory = getDiagnosisHistory();
+    const history = fullHistory.slice(0, 5);
+
+    if (!history.length) {
+        content.innerHTML = `
+            <div class="dashboard-history-empty">
+                <div style="font-size:34px; margin-bottom:8px;">📋</div>
+                <strong>No diagnoses yet.</strong>
+                <div style="margin-top:6px;">Run your first diagnosis while signed in and it will appear here.</div>
+            </div>`;
+        return;
+    }
+
+    content.innerHTML = `
+        <div class="dashboard-history-list">
+            ${history.map(entry => {
+                const diagnosis = entry.diagnosis || {};
+                const severity = normalizeSeverity(diagnosis.severity);
+                const globalIndex = fullHistory.findIndex(item => item.id === entry.id);
+                return `
+                    <div class="dashboard-history-item">
+                        <div class="dashboard-history-item-main">
+                            <div class="dashboard-history-item-title">${escapeHTML(diagnosis.title || "Troubleshooting Result")}</div>
+                            <div class="dashboard-history-item-meta">${escapeHTML(entry.device || "Device")} · ${escapeHTML(formatHistoryDate(entry.createdAt))} · ${escapeHTML(severity.toUpperCase())}</div>
+                            <div class="dashboard-history-item-problem">${escapeHTML(entry.problem || "No problem description")}</div>
+                        </div>
+                        <button type="button" class="btn btn-secondary" onclick="viewDashboardHistoryEntry(${globalIndex})">View</button>
+                    </div>`;
+            }).join("")}
+        </div>`;
+}
+
+function viewDashboardHistoryEntry(index) {
+    openHistory();
+    setTimeout(() => viewHistoryEntry(index), 0);
 }
 
 function openHistory() {
@@ -4958,7 +5218,21 @@ function normalizeDiagnosis(
 
         safety:
             data.safety ||
-            ""
+            "",
+
+        category:
+            data.category ||
+            "",
+
+        imageQueries:
+            Array.isArray(data.imageQueries)
+                ? data.imageQueries
+                : [],
+
+        solutionImages:
+            Array.isArray(data.solutionImages)
+                ? data.solutionImages
+                : []
 
     };
 
@@ -5480,6 +5754,123 @@ function escapeHTML(
 
 
 /* =========================================================
+   SOLUTION IMAGE HELPERS
+   Uses embedded SVG illustrations, so no external image host
+   or extra image files are required.
+========================================================= */
+
+function solutionImageType(step) {
+    const text = String(step || "").toLowerCase();
+
+    if (/wifi|wi-fi|internet|router|network|connection|signal/.test(text)) return "wifi";
+    if (/storage|space|disk|drive|delete|uninstall|files/.test(text)) return "storage";
+    if (/restart|reboot|power off|shut down|turn off/.test(text)) return "restart";
+    if (/update|software|windows|android|ios|firmware|driver/.test(text)) return "update";
+    if (/battery|charge|charger|charging/.test(text)) return "battery";
+    if (/clean|dust|vent|fan|overheat|temperature|heat/.test(text)) return "clean";
+    if (/ram|memory|background|app|application|task/.test(text)) return "memory";
+    if (/cable|plug|adapter|port|usb/.test(text)) return "cable";
+    if (/display|screen|brightness|monitor/.test(text)) return "screen";
+    return "tools";
+}
+
+function solutionImageSVG(step) {
+    const type = solutionImageType(step);
+    const icons = {
+        wifi: `<path d="M34 55c9-9 23-9 32 0M25 46c14-14 36-14 50 0M16 37c19-19 49-19 68 0"/><circle cx="50" cy="65" r="4" fill="currentColor" stroke="none"/>`,
+        storage: `<rect x="24" y="22" width="52" height="56" rx="7"/><path d="M32 34h36M32 46h36M32 58h22"/><circle cx="66" cy="66" r="3" fill="currentColor" stroke="none"/>`,
+        restart: `<path d="M74 43a25 25 0 1 0 1 17"/><path d="M75 27v18H57"/>`,
+        update: `<rect x="24" y="22" width="52" height="40" rx="5"/><path d="M50 69V62M40 74h20"/><path d="M50 31v20M42 43l8 8 8-8"/>`,
+        battery: `<rect x="24" y="31" width="48" height="38" rx="6"/><path d="M72 43h6v14h-6M50 36l-8 13h8l-5 14 15-18h-9z"/>`,
+        clean: `<path d="M25 70l25-25 12 12-25 13z"/><path d="M50 45l9-9 12 12-9 9"/><path d="M28 30l3 7M39 25v8M52 29l-3 7"/>`,
+        memory: `<rect x="27" y="27" width="46" height="46" rx="5"/><path d="M35 20v7M45 20v7M55 20v7M65 20v7M35 73v7M45 73v7M55 73v7M65 73v7M20 35h7M20 46h7M20 57h7M73 35h7M73 46h7M73 57h7"/><rect x="39" y="39" width="22" height="22" rx="2"/>`,
+        cable: `<path d="M29 35h17v12H29zM54 53h17v12H54zM46 41c0 8 8 8 8 12"/><path d="M29 47v8M71 53v-8"/>`,
+        screen: `<rect x="20" y="24" width="60" height="43" rx="5"/><path d="M43 76h14M50 67v9"/><circle cx="50" cy="45" r="8"/>`,
+        tools: `<path d="M29 29l42 42M71 29L29 71"/><circle cx="50" cy="50" r="25"/><path d="M41 41l18 18M59 41L41 59"/>`
+    };
+
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+        <rect width="100" height="100" rx="16" fill="#eff6ff"/>
+        <g fill="none" stroke="#2563eb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">${icons[type]}</g>
+    </svg>`;
+
+    return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg);
+}
+
+function solutionImageAlt(step) {
+    const type = solutionImageType(step);
+    const labels = {
+        wifi: "Wi-Fi troubleshooting illustration",
+        storage: "Storage cleanup illustration",
+        restart: "Device restart illustration",
+        update: "Software update illustration",
+        battery: "Battery and charging illustration",
+        clean: "Device cleaning and cooling illustration",
+        memory: "Memory and background apps illustration",
+        cable: "Cable and port troubleshooting illustration",
+        screen: "Screen troubleshooting illustration",
+        tools: "General troubleshooting tools illustration"
+    };
+    return labels[type];
+}
+
+function getSolutionImageForStep(diagnosis, step) {
+    const images = Array.isArray(diagnosis?.solutionImages)
+        ? diagnosis.solutionImages
+        : [];
+
+    const exact = images.find(
+        item => String(item?.step || "").trim() === String(step || "").trim()
+    );
+
+    if (exact && exact.imageUrl) return exact;
+
+    const normalized = String(step || "").trim().toLowerCase();
+    return images.find(
+        item => String(item?.step || "").trim().toLowerCase() === normalized
+    ) || null;
+}
+
+function encodeForAttribute(value) {
+    return encodeURIComponent(String(value ?? ""));
+}
+
+function openSolutionImage(src, caption, photographer, pexelsUrl) {
+    const modal = document.getElementById("solutionImageModal");
+    const image = document.getElementById("solutionImageModalImg");
+    const text = document.getElementById("solutionImageModalCaption");
+    if (!modal || !image) return;
+
+    image.src = src;
+    image.alt = caption || "Solution image";
+
+    if (text) {
+        text.innerHTML = escapeHTML(caption || "Solution");
+        if (photographer) {
+            text.innerHTML += ` · Photo by ${escapeHTML(photographer)}`;
+        }
+        if (pexelsUrl) {
+            text.innerHTML += ` · <a href="${escapeHTML(pexelsUrl)}" target="_blank" rel="noopener noreferrer">View on Pexels</a>`;
+        }
+    }
+
+    modal.classList.add("open");
+    document.body.style.overflow = "hidden";
+}
+
+function closeSolutionImage(event) {
+    if (event && event.target && event.target.id !== "solutionImageModal") return;
+    const modal = document.getElementById("solutionImageModal");
+    if (!modal) return;
+    modal.classList.remove("open");
+    document.body.style.overflow = "";
+}
+
+document.addEventListener("keydown", function(event) {
+    if (event.key === "Escape") closeSolutionImage();
+});
+
+/* =========================================================
    RENDER DIAGNOSIS
 ========================================================= */
 
@@ -5594,19 +5985,57 @@ function renderDiagnosis(
 
         steps
             .map(
-                step => `
+                (step, index) => {
+                    const realImage = getSolutionImageForStep(diagnosis, step);
+                    const imageSrc = realImage?.imageUrl || solutionImageSVG(step);
+                    const imageAlt = realImage?.alt || solutionImageAlt(step);
+                    const photographer = realImage?.photographer || "";
+                    const photographerUrl = realImage?.photographerUrl || "";
+                    const pexelsUrl = realImage?.pexelsUrl || "";
+                    const isRealPhoto = Boolean(realImage?.imageUrl);
+                    const caption = step;
 
-                    <li>
+                    const clickArgs = [
+                        imageSrc,
+                        caption,
+                        photographer,
+                        pexelsUrl
+                    ].map(encodeForAttribute);
 
-                        ${
-                            escapeHTML(
-                                step
-                            )
-                        }
+                    return `
+
+                    <li class="solution-step">
+
+                        <div
+                            class="solution-visual ${isRealPhoto ? "real-solution-photo" : "fallback-solution-visual"}"
+                            role="button"
+                            tabindex="0"
+                            aria-label="View solution image for step ${index + 1}"
+                            onclick="openSolutionImage(decodeURIComponent('${clickArgs[0]}'), decodeURIComponent('${clickArgs[1]}'), decodeURIComponent('${clickArgs[2]}'), decodeURIComponent('${clickArgs[3]}'))"
+                            onkeydown="if(event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openSolutionImage(decodeURIComponent('${clickArgs[0]}'), decodeURIComponent('${clickArgs[1]}'), decodeURIComponent('${clickArgs[2]}'), decodeURIComponent('${clickArgs[3]}')); }"
+                        >
+                            <img
+                                class="solution-image"
+                                src="${escapeHTML(imageSrc)}"
+                                alt="${escapeHTML(imageAlt)}"
+                                loading="lazy"
+                                onerror="this.onerror=null; this.src='${solutionImageSVG(step)}'; this.closest('.solution-visual').classList.remove('real-solution-photo'); this.closest('.solution-visual').classList.add('fallback-solution-visual');"
+                            >
+                            <span class="solution-image-hint">${isRealPhoto ? "Real photo · Tap to enlarge" : "Illustration · Tap to enlarge"}</span>
+                        </div>
+
+                        <div class="solution-step-text">
+                            <div class="solution-step-number">Step ${index + 1}</div>
+                            <div class="solution-step-title">${escapeHTML(step)}</div>
+                            <div>${escapeHTML(step)}</div>
+                            ${photographer ? `<div class="solution-photo-credit">Photo by ${escapeHTML(photographer)}${photographerUrl ? ` · <a href="${escapeHTML(photographerUrl)}" target="_blank" rel="noopener noreferrer">Photographer</a>` : ""}${pexelsUrl ? ` · <a href="${escapeHTML(pexelsUrl)}" target="_blank" rel="noopener noreferrer">Pexels</a>` : ""}</div>` : ""}
+                            <div class="solution-helper">👀 Look at the picture, then follow the step.</div>
+                        </div>
 
                     </li>
 
-                `
+                `;
+                }
             )
             .join("");
 
@@ -5744,7 +6173,7 @@ function renderDiagnosis(
             </h3>
 
 
-            <ol class="steps-list">
+            <ol class="steps-list" style="list-style:none; padding:0; margin:0;">
 
                 ${stepsHTML}
 
@@ -6353,6 +6782,16 @@ document.addEventListener(
 
 </script>
 
+
+
+<!-- Visual solution image viewer -->
+<div class="solution-image-modal" id="solutionImageModal" onclick="closeSolutionImage(event)">
+    <div class="solution-image-modal-content" onclick="event.stopPropagation()">
+        <button class="solution-image-modal-close" type="button" onclick="closeSolutionImage()">✕ Close</button>
+        <img id="solutionImageModalImg" src="" alt="Solution image">
+        <div class="solution-image-modal-caption" id="solutionImageModalCaption"></div>
+    </div>
+</div>
 
 </body>
 
