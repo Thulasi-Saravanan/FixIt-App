@@ -784,6 +784,80 @@
         }
 
 
+
+        .incident-connection {
+            margin: 22px 0 28px;
+            padding: 18px;
+            border: 1px solid #dbe7f5;
+            border-radius: 16px;
+            background: #f8fbff;
+        }
+
+        .incident-connection-title {
+            font-size: 15px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            color: #0f172a;
+        }
+
+        .incident-connection-flow {
+            display: grid;
+            grid-template-columns: 1fr 36px 1fr;
+            align-items: stretch;
+            gap: 10px;
+        }
+
+        .incident-connection-card {
+            padding: 13px 14px;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+        }
+
+        .incident-connection-label {
+            display: block;
+            margin-bottom: 5px;
+            color: #64748b;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+        }
+
+        .incident-connection-text {
+            color: #1e293b;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .incident-connection-arrow {
+            display: grid;
+            place-items: center;
+            color: #2563eb;
+            font-weight: 800;
+            font-size: 20px;
+        }
+
+        .incident-connection-result {
+            margin-top: 11px;
+            padding: 11px 13px;
+            border-radius: 11px;
+            background: #eff6ff;
+            color: #1e40af;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 680px) {
+            .incident-connection-flow {
+                grid-template-columns: 1fr;
+            }
+            .incident-connection-arrow {
+                transform: rotate(90deg);
+                height: 20px;
+            }
+        }
+
         /* =====================================================
            DIAGNOSIS HEADER
         ===================================================== */
@@ -4262,6 +4336,66 @@ function escapeHTML(
    RENDER DIAGNOSIS
 ========================================================= */
 
+
+function buildIncidentConnectionHTML() {
+    const problem = String(appState.problem || "").trim();
+    const event = String(appState.whatHappened || "").trim();
+
+    if (!event) return "";
+
+    const e = normalizeText(event);
+    const p = normalizeText(problem);
+
+    let relation =
+        "The previous event is included as context when selecting the diagnosis.";
+
+    if (
+        /drop|dropped|fell|fall|impact|hit|knocked|crack|broken|bent/.test(e) &&
+        /shutdown|shut down|turn off|turns off|power off|dead|not turning on/.test(p)
+    ) {
+        relation =
+            "The shutdown happened after a physical impact, so FixIt considers possible hardware, battery, or power-connection effects.";
+    } else if (/drop|dropped|fell|fall|impact|hit|knocked|crack|broken|bent/.test(e)) {
+        relation =
+            "The physical impact is treated as a possible trigger for the reported problem.";
+    } else if (/water|liquid|wet|rain|spill|spilled|moisture/.test(e)) {
+        relation =
+            "The possible liquid exposure is treated as a potential trigger for the reported problem.";
+    } else if (/install|installed|update|updated|app|application|software|download/.test(e)) {
+        relation =
+            "The recent software change is treated as a possible trigger for the reported problem.";
+    } else if (/charger|charging|charge|adapter|power|outlet|electric/.test(e)) {
+        relation =
+            "The recent power or charging event is treated as possible context for the reported problem.";
+    }
+
+    return `
+        <section class="incident-connection">
+            <div class="incident-connection-title">
+                How FixIt connected your answers
+            </div>
+
+            <div class="incident-connection-flow">
+                <div class="incident-connection-card">
+                    <span class="incident-connection-label">What is the problem?</span>
+                    <div class="incident-connection-text">${escapeHTML(problem)}</div>
+                </div>
+
+                <div class="incident-connection-arrow" aria-hidden="true">→</div>
+
+                <div class="incident-connection-card">
+                    <span class="incident-connection-label">What happened before?</span>
+                    <div class="incident-connection-text">${escapeHTML(event)}</div>
+                </div>
+            </div>
+
+            <div class="incident-connection-result">
+                <strong>Connection:</strong> ${escapeHTML(relation)}
+            </div>
+        </section>
+    `;
+}
+
 function renderDiagnosis(
     diagnosis
 ) {
@@ -4489,6 +4623,8 @@ function renderDiagnosis(
         </div>
 
 
+
+        ${buildIncidentConnectionHTML()}
 
         <!-- =============================================
              LIKELY CAUSES
