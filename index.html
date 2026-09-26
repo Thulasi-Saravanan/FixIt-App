@@ -4986,6 +4986,14 @@ function generateLocalDiagnosis() {
 
 /* =========================================================
    SUPABASE SERVER DIAGNOSIS
+
+   IMAGE PROVIDER FLOW:
+   Groq -> creates search queries
+   Pexels -> real photos
+   OpenAI -> AI-generated instructional images when needed
+
+   The OpenAI secret stays in Supabase Edge Function Secrets
+   as OPENAI_KEY. It must NOT be placed in this HTML file.
 ========================================================= */
 
 async function requestServerDiagnosis() {
@@ -5013,7 +5021,15 @@ async function requestServerDiagnosis() {
             "",
 
         whatHappened:
-            appState.whatHappened
+            appState.whatHappened,
+
+        // Image workflow is handled by the Supabase Edge Function.
+        // API keys are NEVER stored in this HTML.
+        imageOptions: {
+            enableGroq: true,
+            enablePexels: true,
+            enableOpenAI: true
+        }
 
     };
 
@@ -5209,7 +5225,33 @@ function normalizeDiagnosis(
         solutionImages:
             Array.isArray(data.solutionImages)
                 ? data.solutionImages
-                : []
+                : [],
+
+        generatedImages:
+            Array.isArray(data.generatedImages)
+                ? data.generatedImages.map((item) => ({
+                    ...item,
+                    imageUrl:
+                        item?.imageUrl ||
+                        item?.url ||
+                        item?.image_url ||
+                        (item?.b64_json
+                            ? `data:image/png;base64,${item.b64_json}`
+                            : "")
+                })).filter(item => item.imageUrl)
+                : (data.generatedImage
+                    ? [{
+                        step: data.generatedImage.step || "",
+                        imageUrl:
+                            data.generatedImage.imageUrl ||
+                            data.generatedImage.url ||
+                            data.generatedImage.image_url ||
+                            (data.generatedImage.b64_json
+                                ? `data:image/png;base64,${data.generatedImage.b64_json}`
+                                : ""),
+                        alt: data.generatedImage.alt || "AI-generated instructional image"
+                    }].filter(item => item.imageUrl)
+                    : [])
 
     };
 
@@ -5746,11 +5788,18 @@ function getSolutionImageForStep(diagnosis, step, index) {
         item => String(item?.step || "").trim().toLowerCase() === normalized
     );
 
-    if (exact) return exact;
+    return exact || images[index] || null;
+}
 
-    // Groq normally keeps the original step text, but use the same array
-    // position as a robust fallback if wording differs slightly.
-    return images[index] || null;
+function getGeneratedImageForStep(diagnosis, step, index) {
+    const images = Array.isArray(diagnosis?.generatedImages)
+        ? diagnosis.generatedImages.filter(item => item && item.imageUrl)
+        : [];
+    const normalized = String(step || "").trim().toLowerCase();
+    const exact = images.find(
+        item => String(item?.step || "").trim().toLowerCase() === normalized
+    );
+    return exact || images[index] || null;
 }
 
 function encodeForAttribute(value) {
@@ -5909,12 +5958,15 @@ function renderDiagnosis(
             .map(
                 (step, index) => {
                     const realImage = getSolutionImageForStep(diagnosis, step, index);
-                    const imageSrc = realImage?.imageUrl || "";
-                    const imageAlt = realImage?.alt || `Real photo for: ${step}`;
+                    const generatedImage = getGeneratedImageForStep(diagnosis, step, index);
+                    const image = realImage || generatedImage;
+                    const imageSrc = image?.imageUrl || "";
+                    const imageAlt = image?.alt || `${realImage ? "Real photo" : "AI-generated instructional image"} for: ${step}`;
                     const photographer = realImage?.photographer || "";
                     const photographerUrl = realImage?.photographerUrl || "";
                     const pexelsUrl = realImage?.pexelsUrl || "";
-                    const isRealPhoto = Boolean(realImage?.imageUrl);
+                    const isImage = Boolean(image?.imageUrl);
+                    const isGenerated = !realImage && Boolean(generatedImage?.imageUrl);
                     const caption = step;
 
                     const clickArgs = [
@@ -5924,23 +5976,23 @@ function renderDiagnosis(
                         pexelsUrl
                     ].map(encodeForAttribute);
 
-                    const visualHTML = isRealPhoto
+                    const visualHTML = isImage
                         ? `
                             <div
                                 class="solution-visual real-solution-photo"
                                 role="button"
                                 tabindex="0"
-                                aria-label="View real solution photo for step ${index + 1}"
+                                aria-label="View solution image for step ${index + 1}"
                                 onclick="openSolutionImage(decodeURIComponent('${clickArgs[0]}'), decodeURIComponent('${clickArgs[1]}'), decodeURIComponent('${clickArgs[2]}'), decodeURIComponent('${clickArgs[3]}'))"
                                 onkeydown="if(event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openSolutionImage(decodeURIComponent('${clickArgs[0]}'), decodeURIComponent('${clickArgs[1]}'), decodeURIComponent('${clickArgs[2]}'), decodeURIComponent('${clickArgs[3]}')); }"
                             >
                                 <img class="solution-image" src="${escapeHTML(imageSrc)}" alt="${escapeHTML(imageAlt)}" loading="lazy"
-                                    onerror="this.closest('.solution-visual').outerHTML='<div class=\"solution-visual solution-no-photo\"><span>📷 Real photo unavailable</span></div>'">
-                                <span class="solution-image-hint">Real photo · Tap to enlarge</span>
+                                    onerror="this.closest('.solution-visual').outerHTML='<div class=\"solution-visual solution-no-photo\"><span>📷 Image unavailable</span></div>'">
+                                <span class="solution-image-hint">${isGenerated ? "AI-generated guide · Tap to enlarge" : "Real photo · Tap to enlarge"}</span>
                             </div>`
                         : `
                             <div class="solution-visual solution-no-photo">
-                                <span>📷 Real photo unavailable</span>
+                                <span>📷 Image unavailable</span>
                             </div>`;
 
                     return `
@@ -5953,8 +6005,8 @@ function renderDiagnosis(
                             <div class="solution-step-number">Step ${index + 1}</div>
                             <div class="solution-step-title">${escapeHTML(step)}</div>
                             <div>${escapeHTML(step)}</div>
-                            ${photographer ? `<div class="solution-photo-credit">Photo by ${escapeHTML(photographer)}${photographerUrl ? ` · <a href="${escapeHTML(photographerUrl)}" target="_blank" rel="noopener noreferrer">Photographer</a>` : ""}${pexelsUrl ? ` · <a href="${escapeHTML(pexelsUrl)}" target="_blank" rel="noopener noreferrer">Pexels</a>` : ""}</div>` : ""}
-                            <div class="solution-helper">👀 Look at the real picture, then follow the step.</div>
+                            ${photographer ? `<div class="solution-photo-credit">Photo by ${escapeHTML(photographer)}${photographerUrl ? ` · <a href="${escapeHTML(photographerUrl)}" target="_blank" rel="noopener noreferrer">Photographer</a>` : ""}${pexelsUrl ? ` · <a href="${escapeHTML(pexelsUrl)}" target="_blank" rel="noopener noreferrer">Pexels</a>` : ""}</div>` : (isGenerated ? `<div class="solution-photo-credit">AI-generated instructional image</div>` : "")}
+                            <div class="solution-helper">👀 Look at the picture, then follow the step.</div>
                         </div>
 
                     </li>
