@@ -161,6 +161,22 @@
             background: #f8fafc;
         }
 
+        .solution-no-photo {
+            width: 190px;
+            height: 135px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 18px;
+            color: #64748b;
+            font-size: 13px;
+            font-weight: 700;
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            cursor: default;
+        }
+
         .solution-image-modal {
             position: fixed;
             inset: 0;
@@ -2187,9 +2203,8 @@
                 <h2 class="dashboard-history-title">📋 Diagnosis History</h2>
                 <p class="dashboard-history-subtitle" id="dashboardHistorySubtitle">Sign in to see your recent diagnoses here.</p>
             </div>
-            <button type="button" class="btn btn-secondary" id="dashboardHistoryButton" onclick="openDashboardHistory()">View All History</button>
+            <button type="button" class="btn btn-secondary" id="dashboardHistoryButton" onclick="openDashboardHistory()">View History</button>
         </div>
-        <div id="dashboardHistoryContent"></div>
     </section>
 
 
@@ -3610,56 +3625,18 @@ function openDashboardHistory() {
 }
 
 function renderDashboardHistory() {
-    const content = document.getElementById("dashboardHistoryContent");
     const subtitle = document.getElementById("dashboardHistorySubtitle");
     const button = document.getElementById("dashboardHistoryButton");
-    if (!content) return;
+    if (!subtitle || !button) return;
 
     if (!fixitCurrentUser) {
-        if (subtitle) subtitle.textContent = "Sign in to see your recent diagnoses here.";
-        if (button) button.textContent = "Sign In";
-        content.innerHTML = `
-            <div class="dashboard-history-empty">
-                <div style="font-size:34px; margin-bottom:8px;">🔐</div>
-                <strong>Login to access your diagnosis history.</strong>
-                <div style="margin-top:6px;">Your saved diagnoses will appear on this dashboard.</div>
-            </div>`;
+        subtitle.textContent = "Sign in to access your saved diagnoses.";
+        button.textContent = "Sign In";
         return;
     }
 
-    if (subtitle) subtitle.textContent = "Your 5 most recent diagnoses are shown here.";
-    if (button) button.textContent = "View All History";
-
-    const fullHistory = getDiagnosisHistory();
-    const history = fullHistory.slice(0, 5);
-
-    if (!history.length) {
-        content.innerHTML = `
-            <div class="dashboard-history-empty">
-                <div style="font-size:34px; margin-bottom:8px;">📋</div>
-                <strong>No diagnoses yet.</strong>
-                <div style="margin-top:6px;">Run your first diagnosis while signed in and it will appear here.</div>
-            </div>`;
-        return;
-    }
-
-    content.innerHTML = `
-        <div class="dashboard-history-list">
-            ${history.map(entry => {
-                const diagnosis = entry.diagnosis || {};
-                const severity = normalizeSeverity(diagnosis.severity);
-                const globalIndex = fullHistory.findIndex(item => item.id === entry.id);
-                return `
-                    <div class="dashboard-history-item">
-                        <div class="dashboard-history-item-main">
-                            <div class="dashboard-history-item-title">${escapeHTML(diagnosis.title || "Troubleshooting Result")}</div>
-                            <div class="dashboard-history-item-meta">${escapeHTML(entry.device || "Device")} · ${escapeHTML(formatHistoryDate(entry.createdAt))} · ${escapeHTML(severity.toUpperCase())}</div>
-                            <div class="dashboard-history-item-problem">${escapeHTML(entry.problem || "No problem description")}</div>
-                        </div>
-                        <button type="button" class="btn btn-secondary" onclick="viewDashboardHistoryEntry(${globalIndex})">View</button>
-                    </div>`;
-            }).join("")}
-        </div>`;
+    subtitle.textContent = "Click View History to see your saved diagnoses.";
+    button.textContent = "View History";
 }
 
 function viewDashboardHistoryEntry(index) {
@@ -5754,81 +5731,26 @@ function escapeHTML(
 
 
 /* =========================================================
-   SOLUTION IMAGE HELPERS
-   Uses embedded SVG illustrations, so no external image host
-   or extra image files are required.
+   REAL SOLUTION PHOTO HELPERS
+   Photos come from the Supabase Edge Function -> Pexels.
+   No Pexels API key is stored in this HTML.
 ========================================================= */
 
-function solutionImageType(step) {
-    const text = String(step || "").toLowerCase();
-
-    if (/wifi|wi-fi|internet|router|network|connection|signal/.test(text)) return "wifi";
-    if (/storage|space|disk|drive|delete|uninstall|files/.test(text)) return "storage";
-    if (/restart|reboot|power off|shut down|turn off/.test(text)) return "restart";
-    if (/update|software|windows|android|ios|firmware|driver/.test(text)) return "update";
-    if (/battery|charge|charger|charging/.test(text)) return "battery";
-    if (/clean|dust|vent|fan|overheat|temperature|heat/.test(text)) return "clean";
-    if (/ram|memory|background|app|application|task/.test(text)) return "memory";
-    if (/cable|plug|adapter|port|usb/.test(text)) return "cable";
-    if (/display|screen|brightness|monitor/.test(text)) return "screen";
-    return "tools";
-}
-
-function solutionImageSVG(step) {
-    const type = solutionImageType(step);
-    const icons = {
-        wifi: `<path d="M34 55c9-9 23-9 32 0M25 46c14-14 36-14 50 0M16 37c19-19 49-19 68 0"/><circle cx="50" cy="65" r="4" fill="currentColor" stroke="none"/>`,
-        storage: `<rect x="24" y="22" width="52" height="56" rx="7"/><path d="M32 34h36M32 46h36M32 58h22"/><circle cx="66" cy="66" r="3" fill="currentColor" stroke="none"/>`,
-        restart: `<path d="M74 43a25 25 0 1 0 1 17"/><path d="M75 27v18H57"/>`,
-        update: `<rect x="24" y="22" width="52" height="40" rx="5"/><path d="M50 69V62M40 74h20"/><path d="M50 31v20M42 43l8 8 8-8"/>`,
-        battery: `<rect x="24" y="31" width="48" height="38" rx="6"/><path d="M72 43h6v14h-6M50 36l-8 13h8l-5 14 15-18h-9z"/>`,
-        clean: `<path d="M25 70l25-25 12 12-25 13z"/><path d="M50 45l9-9 12 12-9 9"/><path d="M28 30l3 7M39 25v8M52 29l-3 7"/>`,
-        memory: `<rect x="27" y="27" width="46" height="46" rx="5"/><path d="M35 20v7M45 20v7M55 20v7M65 20v7M35 73v7M45 73v7M55 73v7M65 73v7M20 35h7M20 46h7M20 57h7M73 35h7M73 46h7M73 57h7"/><rect x="39" y="39" width="22" height="22" rx="2"/>`,
-        cable: `<path d="M29 35h17v12H29zM54 53h17v12H54zM46 41c0 8 8 8 8 12"/><path d="M29 47v8M71 53v-8"/>`,
-        screen: `<rect x="20" y="24" width="60" height="43" rx="5"/><path d="M43 76h14M50 67v9"/><circle cx="50" cy="45" r="8"/>`,
-        tools: `<path d="M29 29l42 42M71 29L29 71"/><circle cx="50" cy="50" r="25"/><path d="M41 41l18 18M59 41L41 59"/>`
-    };
-
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-        <rect width="100" height="100" rx="16" fill="#eff6ff"/>
-        <g fill="none" stroke="#2563eb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">${icons[type]}</g>
-    </svg>`;
-
-    return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg);
-}
-
-function solutionImageAlt(step) {
-    const type = solutionImageType(step);
-    const labels = {
-        wifi: "Wi-Fi troubleshooting illustration",
-        storage: "Storage cleanup illustration",
-        restart: "Device restart illustration",
-        update: "Software update illustration",
-        battery: "Battery and charging illustration",
-        clean: "Device cleaning and cooling illustration",
-        memory: "Memory and background apps illustration",
-        cable: "Cable and port troubleshooting illustration",
-        screen: "Screen troubleshooting illustration",
-        tools: "General troubleshooting tools illustration"
-    };
-    return labels[type];
-}
-
-function getSolutionImageForStep(diagnosis, step) {
+function getSolutionImageForStep(diagnosis, step, index) {
     const images = Array.isArray(diagnosis?.solutionImages)
-        ? diagnosis.solutionImages
+        ? diagnosis.solutionImages.filter(item => item && item.imageUrl)
         : [];
 
+    const normalized = String(step || "").trim().toLowerCase();
     const exact = images.find(
-        item => String(item?.step || "").trim() === String(step || "").trim()
+        item => String(item?.step || "").trim().toLowerCase() === normalized
     );
 
-    if (exact && exact.imageUrl) return exact;
+    if (exact) return exact;
 
-    const normalized = String(step || "").trim().toLowerCase();
-    return images.find(
-        item => String(item?.step || "").trim().toLowerCase() === normalized
-    ) || null;
+    // Groq normally keeps the original step text, but use the same array
+    // position as a robust fallback if wording differs slightly.
+    return images[index] || null;
 }
 
 function encodeForAttribute(value) {
@@ -5986,9 +5908,9 @@ function renderDiagnosis(
         steps
             .map(
                 (step, index) => {
-                    const realImage = getSolutionImageForStep(diagnosis, step);
-                    const imageSrc = realImage?.imageUrl || solutionImageSVG(step);
-                    const imageAlt = realImage?.alt || solutionImageAlt(step);
+                    const realImage = getSolutionImageForStep(diagnosis, step, index);
+                    const imageSrc = realImage?.imageUrl || "";
+                    const imageAlt = realImage?.alt || `Real photo for: ${step}`;
                     const photographer = realImage?.photographer || "";
                     const photographerUrl = realImage?.photographerUrl || "";
                     const pexelsUrl = realImage?.pexelsUrl || "";
@@ -6002,34 +5924,37 @@ function renderDiagnosis(
                         pexelsUrl
                     ].map(encodeForAttribute);
 
+                    const visualHTML = isRealPhoto
+                        ? `
+                            <div
+                                class="solution-visual real-solution-photo"
+                                role="button"
+                                tabindex="0"
+                                aria-label="View real solution photo for step ${index + 1}"
+                                onclick="openSolutionImage(decodeURIComponent('${clickArgs[0]}'), decodeURIComponent('${clickArgs[1]}'), decodeURIComponent('${clickArgs[2]}'), decodeURIComponent('${clickArgs[3]}'))"
+                                onkeydown="if(event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openSolutionImage(decodeURIComponent('${clickArgs[0]}'), decodeURIComponent('${clickArgs[1]}'), decodeURIComponent('${clickArgs[2]}'), decodeURIComponent('${clickArgs[3]}')); }"
+                            >
+                                <img class="solution-image" src="${escapeHTML(imageSrc)}" alt="${escapeHTML(imageAlt)}" loading="lazy"
+                                    onerror="this.closest('.solution-visual').outerHTML='<div class=\"solution-visual solution-no-photo\"><span>📷 Real photo unavailable</span></div>'">
+                                <span class="solution-image-hint">Real photo · Tap to enlarge</span>
+                            </div>`
+                        : `
+                            <div class="solution-visual solution-no-photo">
+                                <span>📷 Real photo unavailable</span>
+                            </div>`;
+
                     return `
 
                     <li class="solution-step">
 
-                        <div
-                            class="solution-visual ${isRealPhoto ? "real-solution-photo" : "fallback-solution-visual"}"
-                            role="button"
-                            tabindex="0"
-                            aria-label="View solution image for step ${index + 1}"
-                            onclick="openSolutionImage(decodeURIComponent('${clickArgs[0]}'), decodeURIComponent('${clickArgs[1]}'), decodeURIComponent('${clickArgs[2]}'), decodeURIComponent('${clickArgs[3]}'))"
-                            onkeydown="if(event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openSolutionImage(decodeURIComponent('${clickArgs[0]}'), decodeURIComponent('${clickArgs[1]}'), decodeURIComponent('${clickArgs[2]}'), decodeURIComponent('${clickArgs[3]}')); }"
-                        >
-                            <img
-                                class="solution-image"
-                                src="${escapeHTML(imageSrc)}"
-                                alt="${escapeHTML(imageAlt)}"
-                                loading="lazy"
-                                onerror="this.onerror=null; this.src='${solutionImageSVG(step)}'; this.closest('.solution-visual').classList.remove('real-solution-photo'); this.closest('.solution-visual').classList.add('fallback-solution-visual');"
-                            >
-                            <span class="solution-image-hint">${isRealPhoto ? "Real photo · Tap to enlarge" : "Illustration · Tap to enlarge"}</span>
-                        </div>
+                        ${visualHTML}
 
                         <div class="solution-step-text">
                             <div class="solution-step-number">Step ${index + 1}</div>
                             <div class="solution-step-title">${escapeHTML(step)}</div>
                             <div>${escapeHTML(step)}</div>
                             ${photographer ? `<div class="solution-photo-credit">Photo by ${escapeHTML(photographer)}${photographerUrl ? ` · <a href="${escapeHTML(photographerUrl)}" target="_blank" rel="noopener noreferrer">Photographer</a>` : ""}${pexelsUrl ? ` · <a href="${escapeHTML(pexelsUrl)}" target="_blank" rel="noopener noreferrer">Pexels</a>` : ""}</div>` : ""}
-                            <div class="solution-helper">👀 Look at the picture, then follow the step.</div>
+                            <div class="solution-helper">👀 Look at the real picture, then follow the step.</div>
                         </div>
 
                     </li>
