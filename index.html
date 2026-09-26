@@ -62,183 +62,6 @@
 
 
         /* =====================================================
-           SOLUTION IMAGE CARDS
-        ===================================================== */
-
-        .solution-step {
-            display: grid;
-            grid-template-columns: 190px 1fr;
-            gap: 20px;
-            align-items: center;
-            padding: 16px;
-            margin-bottom: 16px;
-            background: #ffffff;
-            border: 1px solid var(--border);
-            border-radius: 18px;
-            box-shadow: 0 5px 18px rgba(15, 23, 42, 0.06);
-            overflow: hidden;
-        }
-
-        .solution-visual {
-            position: relative;
-            cursor: zoom-in;
-            border-radius: 14px;
-            overflow: hidden;
-            background: #eff6ff;
-            border: 1px solid #dbeafe;
-        }
-
-        .solution-image {
-            width: 190px;
-            height: 135px;
-            object-fit: cover;
-            display: block;
-            transition: transform .2s ease;
-        }
-
-        .solution-visual:hover .solution-image {
-            transform: scale(1.04);
-        }
-
-        .solution-image-hint {
-            position: absolute;
-            left: 9px;
-            bottom: 8px;
-            padding: 5px 9px;
-            border-radius: 999px;
-            background: rgba(15, 23, 42, .82);
-            color: #fff;
-            font-size: 11px;
-            font-weight: 700;
-        }
-
-        .solution-step-number {
-            font-weight: 800;
-            color: var(--primary);
-            font-size: 13px;
-            margin-bottom: 5px;
-            text-transform: uppercase;
-            letter-spacing: .04em;
-        }
-
-        .solution-step-title {
-            font-size: 17px;
-            font-weight: 800;
-            color: #0f172a;
-            margin-bottom: 6px;
-        }
-
-        .solution-step-text {
-            line-height: 1.65;
-            color: #334155;
-        }
-
-        .solution-helper {
-            margin-top: 8px;
-            font-size: 12px;
-            color: #64748b;
-        }
-
-        .solution-photo-credit {
-            margin-top: 7px;
-            font-size: 11px;
-            color: #64748b;
-        }
-
-        .solution-photo-credit a,
-        .solution-image-modal-caption a {
-            color: var(--primary);
-            font-weight: 700;
-            text-decoration: none;
-        }
-
-        .solution-photo-credit a:hover,
-        .solution-image-modal-caption a:hover {
-            text-decoration: underline;
-        }
-
-        .real-solution-photo {
-            background: #f8fafc;
-        }
-
-        .solution-no-photo {
-            width: 190px;
-            height: 135px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 18px;
-            color: #64748b;
-            font-size: 13px;
-            font-weight: 700;
-            background: #f8fafc;
-            border: 1px dashed #cbd5e1;
-            cursor: default;
-        }
-
-        .solution-image-modal {
-            position: fixed;
-            inset: 0;
-            z-index: 9999;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            background: rgba(15, 23, 42, .78);
-        }
-
-        .solution-image-modal.open {
-            display: flex;
-        }
-
-        .solution-image-modal-content {
-            width: min(760px, 96vw);
-            max-height: 92vh;
-            padding: 14px;
-            border-radius: 20px;
-            background: #fff;
-            box-shadow: 0 24px 70px rgba(0,0,0,.28);
-        }
-
-        .solution-image-modal-content img {
-            width: 100%;
-            max-height: 72vh;
-            object-fit: contain;
-            display: block;
-            border-radius: 14px;
-            background: #eff6ff;
-        }
-
-        .solution-image-modal-caption {
-            padding: 12px 4px 2px;
-            font-weight: 700;
-            color: #0f172a;
-        }
-
-        .solution-image-modal-close {
-            float: right;
-            border: 0;
-            background: #e2e8f0;
-            color: #0f172a;
-            border-radius: 10px;
-            padding: 7px 11px;
-            cursor: pointer;
-            font-weight: 800;
-        }
-
-        @media (max-width: 620px) {
-            .solution-step {
-                grid-template-columns: 1fr;
-                gap: 12px;
-            }
-            .solution-image {
-                width: 100%;
-                height: 200px;
-            }
-        }
-
-        /* =====================================================
            NAVBAR
         ===================================================== */
 
@@ -1808,265 +1631,6 @@
 
         }
 
-
-        /* =====================================================
-           ACCOUNT / AUTHENTICATION
-        ===================================================== */
-
-        .account-area {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .account-btn {
-            border: 1px solid rgba(255,255,255,.18);
-            background: rgba(255,255,255,.08);
-            color: #fff;
-            border-radius: 10px;
-            padding: 9px 14px;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: .2s ease;
-        }
-
-        .account-btn:hover {
-            background: rgba(255,255,255,.16);
-        }
-
-        .account-email {
-            max-width: 220px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            color: #cbd5e1;
-            font-size: 13px;
-        }
-
-        .auth-modal-content {
-            width: min(430px, 94vw);
-            position: relative;
-        }
-
-        .auth-tabs {
-            display: flex;
-            gap: 6px;
-            margin: 18px 0 20px;
-            padding: 4px;
-            background: #f1f5f9;
-            border-radius: 10px;
-        }
-
-        .auth-tab {
-            flex: 1;
-            border: 0;
-            background: transparent;
-            padding: 10px;
-            border-radius: 8px;
-            color: #64748b;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        .auth-tab.active {
-            background: #fff;
-            color: var(--primary);
-            box-shadow: 0 1px 4px rgba(15,23,42,.08);
-        }
-
-        .auth-form {
-            display: none;
-        }
-
-        .auth-form.active {
-            display: block;
-        }
-
-        .auth-field {
-            margin-bottom: 14px;
-        }
-
-        .auth-field label {
-            display: block;
-            margin-bottom: 6px;
-            font-size: 13px;
-            font-weight: 700;
-            color: #334155;
-        }
-
-        .auth-field input {
-            width: 100%;
-            padding: 12px 13px;
-            border: 1px solid #cbd5e1;
-            border-radius: 10px;
-            font: inherit;
-            outline: none;
-        }
-
-        .auth-field input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37,99,235,.10);
-        }
-
-        .auth-submit {
-            width: 100%;
-            margin-top: 4px;
-        }
-
-        .auth-link {
-            border: 0;
-            background: transparent;
-            color: var(--primary);
-            font-size: 13px;
-            font-weight: 700;
-            cursor: pointer;
-            padding: 8px 0;
-        }
-
-        .auth-message {
-            display: none;
-            margin: 12px 0;
-            padding: 10px 12px;
-            border-radius: 9px;
-            font-size: 13px;
-            line-height: 1.45;
-        }
-
-        .auth-message.show {
-            display: block;
-        }
-
-        .auth-message.success {
-            background: #f0fdf4;
-            color: #166534;
-            border: 1px solid #bbf7d0;
-        }
-
-        .auth-message.error {
-            background: #fef2f2;
-            color: #991b1b;
-            border: 1px solid #fecaca;
-        }
-
-        .profile-panel {
-            display: none;
-            margin-top: 12px;
-            padding: 14px;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            background: #f8fafc;
-        }
-
-        .profile-panel.show {
-            display: block;
-        }
-
-        .profile-email {
-            font-weight: 700;
-            word-break: break-word;
-            margin-bottom: 10px;
-        }
-
-        @media (max-width: 700px) {
-            .account-email {
-                display: none;
-            }
-
-            .account-btn {
-                padding: 8px 11px;
-            }
-        }
-
-        /* =====================================================
-           DIAGNOSIS HISTORY
-        ====================================================== */
-
-        .dashboard-history { margin: 0 0 32px; padding: 24px; border: 1px solid #e2e8f0; border-radius: 20px; background: #fff; box-shadow: 0 10px 30px rgba(15,23,42,.06); }
-        .dashboard-history-header { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:18px; }
-        .dashboard-history-title { margin:0; font-size:22px; color:#0f172a; }
-        .dashboard-history-subtitle { margin:5px 0 0; color:#64748b; font-size:14px; }
-        .dashboard-history-list { display:grid; gap:12px; }
-        .dashboard-history-item { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:16px; border:1px solid #e2e8f0; border-radius:14px; background:#f8fafc; }
-        .dashboard-history-item-main { min-width:0; }
-        .dashboard-history-item-title { font-weight:700; color:#0f172a; margin-bottom:5px; }
-        .dashboard-history-item-meta { color:#64748b; font-size:13px; margin-bottom:6px; }
-        .dashboard-history-item-problem { color:#334155; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:700px; }
-        .dashboard-history-empty { padding:22px; text-align:center; border:1px dashed #cbd5e1; border-radius:14px; color:#64748b; background:#f8fafc; }
-        @media (max-width:700px) { .dashboard-history-header, .dashboard-history-item { align-items:stretch; flex-direction:column; } .dashboard-history-item-problem { max-width:100%; } }
-
-        .history-btn {
-            width: 100%;
-            margin-bottom: 10px;
-        }
-
-        .history-empty {
-            text-align: center;
-            padding: 30px 15px;
-            color: #64748b;
-            line-height: 1.6;
-        }
-
-        .history-list {
-            display: grid;
-            gap: 12px;
-            margin-top: 18px;
-            max-height: 55vh;
-            overflow-y: auto;
-        }
-
-        .history-item {
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 16px;
-            background: #f8fafc;
-        }
-
-        .history-item-title {
-            font-weight: 800;
-            font-size: 17px;
-            margin-bottom: 6px;
-        }
-
-        .history-item-meta {
-            color: #64748b;
-            font-size: 13px;
-            margin-bottom: 8px;
-        }
-
-        .history-item-problem {
-            color: #334155;
-            line-height: 1.5;
-        }
-
-        .history-item-actions {
-            margin-top: 12px;
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .history-delete {
-            border: 0;
-            background: transparent;
-            color: #dc2626;
-            cursor: pointer;
-            font-weight: 700;
-            padding: 6px 0;
-        }
-
-        .history-detail {
-            line-height: 1.65;
-        }
-
-        .history-detail h4 {
-            margin: 18px 0 8px;
-        }
-
-        .history-detail ul {
-            padding-left: 22px;
-        }
-
     </style>
 
 </head>
@@ -2144,23 +1708,8 @@
     </div>
 
 
-    <div class="account-area">
-
-        <div
-            class="account-email"
-            id="accountEmail"
-            aria-live="polite"
-        ></div>
-
-        <button
-            class="account-btn"
-            id="accountButton"
-            type="button"
-            onclick="openAuthModal()"
-        >
-            Log In
-        </button>
-
+    <div class="nav-text">
+        Intelligent Troubleshooting Platform
     </div>
 
 </nav>
@@ -2189,22 +1738,6 @@
             causes and practical troubleshooting steps.
         </p>
 
-    </section>
-
-
-
-    <!-- =====================================================
-         DIAGNOSIS HISTORY DASHBOARD
-    ====================================================== -->
-
-    <section class="dashboard-history" id="dashboardHistorySection">
-        <div class="dashboard-history-header">
-            <div>
-                <h2 class="dashboard-history-title">📋 Diagnosis History</h2>
-                <p class="dashboard-history-subtitle" id="dashboardHistorySubtitle">Sign in to see your recent diagnoses here.</p>
-            </div>
-            <button type="button" class="btn btn-secondary" id="dashboardHistoryButton" onclick="openDashboardHistory()">View History</button>
-        </div>
     </section>
 
 
@@ -2738,265 +2271,6 @@
 
 
 <!-- =========================================================
-     AUTHENTICATION MODAL
-     Added separately from the existing diagnosis system.
-========================================================= -->
-
-<div
-    class="modal"
-    id="authModal"
-    onclick="closeModalOutside(event,'authModal')"
->
-
-    <div class="modal-content auth-modal-content">
-
-        <button
-            class="close-modal"
-            onclick="closeModal('authModal')"
-            aria-label="Close"
-        >
-            ×
-        </button>
-
-        <h2 id="authTitle">Welcome to FixIt</h2>
-
-        <p id="authSubtitle">
-            Sign in to keep your FixIt account available across sessions.
-        </p>
-
-        <div class="auth-tabs">
-            <button
-                class="auth-tab active"
-                id="loginTab"
-                type="button"
-                onclick="showAuthForm('login')"
-            >
-                Log In
-            </button>
-
-            <button
-                class="auth-tab"
-                id="signupTab"
-                type="button"
-                onclick="showAuthForm('signup')"
-            >
-                Sign Up
-            </button>
-        </div>
-
-        <div
-            class="auth-message"
-            id="authMessage"
-            role="status"
-            aria-live="polite"
-        ></div>
-
-        <form
-            class="auth-form active"
-            id="loginForm"
-            onsubmit="handleLogin(event)"
-        >
-
-            <div class="auth-field">
-                <label for="loginEmail">Email</label>
-                <input
-                    id="loginEmail"
-                    type="email"
-                    autocomplete="email"
-                    required
-                    placeholder="you@example.com"
-                >
-            </div>
-
-            <div class="auth-field">
-                <label for="loginPassword">Password</label>
-                <input
-                    id="loginPassword"
-                    type="password"
-                    autocomplete="current-password"
-                    required
-                    minlength="6"
-                    placeholder="Your password"
-                >
-            </div>
-
-            <button
-                class="btn btn-primary auth-submit"
-                id="loginSubmit"
-                type="submit"
-            >
-                Log In
-            </button>
-
-            <button
-                class="auth-link"
-                type="button"
-                onclick="showAuthForm('reset')"
-            >
-                Forgot password?
-            </button>
-
-        </form>
-
-        <form
-            class="auth-form"
-            id="signupForm"
-            onsubmit="handleSignup(event)"
-        >
-
-            <div class="auth-field">
-                <label for="signupName">Name</label>
-                <input
-                    id="signupName"
-                    type="text"
-                    autocomplete="name"
-                    required
-                    maxlength="80"
-                    placeholder="Your name"
-                >
-            </div>
-
-            <div class="auth-field">
-                <label for="signupEmail">Email</label>
-                <input
-                    id="signupEmail"
-                    type="email"
-                    autocomplete="email"
-                    required
-                    placeholder="you@example.com"
-                >
-            </div>
-
-            <div class="auth-field">
-                <label for="signupPassword">Password</label>
-                <input
-                    id="signupPassword"
-                    type="password"
-                    autocomplete="new-password"
-                    required
-                    minlength="6"
-                    placeholder="At least 6 characters"
-                >
-            </div>
-
-            <div class="auth-field">
-                <label for="signupConfirmPassword">Confirm password</label>
-                <input
-                    id="signupConfirmPassword"
-                    type="password"
-                    autocomplete="new-password"
-                    required
-                    minlength="6"
-                    placeholder="Enter password again"
-                >
-            </div>
-
-            <button
-                class="btn btn-primary auth-submit"
-                id="signupSubmit"
-                type="submit"
-            >
-                Create Account
-            </button>
-
-        </form>
-
-        <form
-            class="auth-form"
-            id="resetForm"
-            onsubmit="handlePasswordReset(event)"
-        >
-
-            <div class="auth-field">
-                <label for="resetEmail">Email</label>
-                <input
-                    id="resetEmail"
-                    type="email"
-                    autocomplete="email"
-                    required
-                    placeholder="you@example.com"
-                >
-            </div>
-
-            <button
-                class="btn btn-primary auth-submit"
-                type="submit"
-            >
-                Send Reset Email
-            </button>
-
-            <button
-                class="auth-link"
-                type="button"
-                onclick="showAuthForm('login')"
-            >
-                Back to login
-            </button>
-
-        </form>
-
-        <div
-            class="profile-panel"
-            id="profilePanel"
-        >
-            <div class="profile-email" id="profileEmail"></div>
-
-            <button
-                class="btn btn-primary history-btn"
-                type="button"
-                onclick="openHistory()"
-            >
-                My Diagnosis History
-            </button>
-
-            <button
-                class="btn btn-secondary"
-                type="button"
-                onclick="handleLogout()"
-            >
-                Log Out
-            </button>
-        </div>
-
-    </div>
-
-</div>
-
-
-<!-- =========================================================
-     DIAGNOSIS HISTORY MODAL
-========================================================= -->
-
-<div
-    class="modal"
-    id="historyModal"
-    onclick="closeModalOutside(event,'historyModal')"
->
-
-    <div class="modal-content">
-
-        <button
-            class="close-modal"
-            onclick="closeModal('historyModal')"
-            aria-label="Close history"
-        >
-            ×
-        </button>
-
-        <h2>📋 My Diagnosis History</h2>
-
-        <p id="historySubtitle" style="color:#64748b; line-height:1.6;">
-            Your diagnoses saved on this browser.
-        </p>
-
-        <div id="historyContent"></div>
-
-    </div>
-
-</div>
-
-
-<!-- =========================================================
      SAFETY MODAL
 ========================================================= -->
 
@@ -3090,761 +2364,14 @@
 
 
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script>
 
 /* =========================================================
-   FIXIT AUTHENTICATION
-   This uses the same Supabase project for Auth only.
-   The existing diagnosis request function below is unchanged.
+   GOOGLE APPS SCRIPT
 ========================================================= */
 
-const FIXIT_AUTH_URL =
-    "https://cnjykckejgtfrmckrjbs.supabase.co";
-
-const FIXIT_AUTH_KEY =
-    "sb_publishable_c4J9-DLvIUn_3tR8oN_EjA_c4FKo2iF";
-
-const fixitAuthClient =
-    window.supabase.createClient(
-        FIXIT_AUTH_URL,
-        FIXIT_AUTH_KEY
-    );
-
-let fixitCurrentUser = null;
-
-function authMessage(message, type = "success") {
-
-    const box =
-        document.getElementById("authMessage");
-
-    if (!box) return;
-
-    box.textContent = message;
-    box.className =
-        "auth-message show " + type;
-}
-
-function clearAuthMessage() {
-
-    const box =
-        document.getElementById("authMessage");
-
-    if (!box) return;
-
-    box.textContent = "";
-    box.className = "auth-message";
-}
-
-function showAuthForm(formName) {
-
-    document
-        .querySelectorAll(".auth-form")
-        .forEach(form =>
-            form.classList.remove("active")
-        );
-
-    document
-        .getElementById("loginTab")
-        .classList.remove("active");
-
-    document
-        .getElementById("signupTab")
-        .classList.remove("active");
-
-    clearAuthMessage();
-
-    const title =
-        document.getElementById("authTitle");
-
-    const subtitle =
-        document.getElementById("authSubtitle");
-
-    if (formName === "signup") {
-
-        document
-            .getElementById("signupForm")
-            .classList.add("active");
-
-        document
-            .getElementById("signupTab")
-            .classList.add("active");
-
-        title.textContent = "Create your FixIt account";
-        subtitle.textContent =
-            "Create an account to access your FixIt profile.";
-
-        return;
-    }
-
-    if (formName === "reset") {
-
-        document
-            .getElementById("resetForm")
-            .classList.add("active");
-
-        title.textContent = "Reset your password";
-        subtitle.textContent =
-            "Enter your email and FixIt will send a password reset link.";
-
-        return;
-    }
-
-    document
-        .getElementById("loginForm")
-        .classList.add("active");
-
-    document
-        .getElementById("loginTab")
-        .classList.add("active");
-
-    title.textContent = "Welcome back to FixIt";
-    subtitle.textContent =
-        "Sign in to your FixIt account.";
-}
-
-function openAuthModal() {
-
-    const modal =
-        document.getElementById("authModal");
-
-    if (!modal) return;
-
-    clearAuthMessage();
-
-    if (fixitCurrentUser) {
-
-        document
-            .getElementById("loginForm")
-            .classList.remove("active");
-
-        document
-            .getElementById("signupForm")
-            .classList.remove("active");
-
-        document
-            .getElementById("resetForm")
-            .classList.remove("active");
-
-        document
-            .getElementById("profilePanel")
-            .classList.add("show");
-
-        document.getElementById("authTitle").textContent =
-            "Your FixIt Account";
-
-        document.getElementById("authSubtitle").textContent =
-            "You are currently signed in.";
-
-        document.getElementById("profileEmail").textContent =
-            fixitCurrentUser.email || "Signed-in user";
-
-    } else {
-
-        document
-            .getElementById("profilePanel")
-            .classList.remove("show");
-
-        showAuthForm("login");
-    }
-
-    modal.classList.add("show");
-}
-
-function updateAccountUI(user) {
-
-    fixitCurrentUser = user || null;
-
-    const button =
-        document.getElementById("accountButton");
-
-    const email =
-        document.getElementById("accountEmail");
-
-    if (!button) return;
-
-    if (user) {
-        button.textContent = "Account";
-        button.title = user.email || "Account";
-
-        if (email) {
-            email.textContent = user.email || "";
-        }
-    } else {
-        button.textContent = "Log In";
-        button.title = "Log in or create an account";
-
-        if (email) {
-            email.textContent = "";
-        }
-    }
-
-    renderDashboardHistory();
-}
-
-async function handleLogin(event) {
-
-    event.preventDefault();
-    clearAuthMessage();
-
-    const email =
-        document.getElementById("loginEmail").value.trim();
-
-    const password =
-        document.getElementById("loginPassword").value;
-
-    const button =
-        document.getElementById("loginSubmit");
-
-    button.disabled = true;
-    button.textContent = "Logging in...";
-
-    try {
-
-        const { data, error } =
-            await fixitAuthClient.auth.signInWithPassword({
-                email,
-                password
-            });
-
-        if (error) throw error;
-
-        updateAccountUI(data.user);
-
-        authMessage("Login successful.", "success");
-
-        setTimeout(() => {
-            closeModal("authModal");
-        }, 700);
-
-    } catch (error) {
-
-        authMessage(
-            error?.message ||
-            "Unable to log in. Please check your email and password.",
-            "error"
-        );
-
-    } finally {
-
-        button.disabled = false;
-        button.textContent = "Log In";
-    }
-}
-
-async function handleSignup(event) {
-
-    event.preventDefault();
-    clearAuthMessage();
-
-    const name =
-        document.getElementById("signupName").value.trim();
-
-    const email =
-        document.getElementById("signupEmail").value.trim();
-
-    const password =
-        document.getElementById("signupPassword").value;
-
-    const confirmPassword =
-        document.getElementById("signupConfirmPassword").value;
-
-    if (password !== confirmPassword) {
-        authMessage(
-            "Passwords do not match.",
-            "error"
-        );
-        return;
-    }
-
-    const button =
-        document.getElementById("signupSubmit");
-
-    button.disabled = true;
-    button.textContent = "Creating account...";
-
-    try {
-
-        const { data, error } =
-            await fixitAuthClient.auth.signUp({
-                email,
-                password,
-                options: {
-                    data: {
-                        full_name: name
-                    }
-                }
-            });
-
-        if (error) throw error;
-
-        if (data.session && data.user) {
-
-            updateAccountUI(data.user);
-
-            authMessage(
-                "Account created successfully.",
-                "success"
-            );
-
-            setTimeout(() => {
-                closeModal("authModal");
-            }, 900);
-
-        } else {
-
-            showAuthForm("login");
-
-            authMessage(
-                "Account created. Check your email to confirm your account, then log in.",
-                "success"
-            );
-        }
-
-    } catch (error) {
-
-        authMessage(
-            error?.message ||
-            "Unable to create your account.",
-            "error"
-        );
-
-    } finally {
-
-        button.disabled = false;
-        button.textContent = "Create Account";
-    }
-}
-
-async function handlePasswordReset(event) {
-
-    event.preventDefault();
-    clearAuthMessage();
-
-    const email =
-        document.getElementById("resetEmail").value.trim();
-
-    try {
-
-        const redirectUrl =
-            window.location.origin +
-            window.location.pathname;
-
-        const { error } =
-            await fixitAuthClient.auth.resetPasswordForEmail(
-                email,
-                {
-                    redirectTo: redirectUrl
-                }
-            );
-
-        if (error) throw error;
-
-        authMessage(
-            "If an account exists for that email, a password reset link has been sent.",
-            "success"
-        );
-
-    } catch (error) {
-
-        authMessage(
-            error?.message ||
-            "Unable to send the reset email.",
-            "error"
-        );
-    }
-}
-
-async function handleLogout() {
-
-    try {
-        const { error } =
-            await fixitAuthClient.auth.signOut();
-
-        if (error) throw error;
-
-        updateAccountUI(null);
-        closeModal("authModal");
-
-    } catch (error) {
-
-        authMessage(
-            error?.message ||
-            "Unable to log out.",
-            "error"
-        );
-    }
-}
-
-async function handleRecoverySession() {
-
-    const hash = window.location.hash || "";
-
-    if (!hash.includes("type=recovery")) {
-        return;
-    }
-
-    openAuthModal();
-
-    showAuthForm("login");
-
-    const newPassword =
-        window.prompt("Enter your new FixIt password:");
-
-    if (!newPassword) {
-        return;
-    }
-
-    if (newPassword.length < 6) {
-        alert("Password must be at least 6 characters.");
-        return;
-    }
-
-    try {
-
-        const { error } =
-            await fixitAuthClient.auth.updateUser({
-                password: newPassword
-            });
-
-        if (error) throw error;
-
-        closeModal("authModal");
-
-        alert("Your password has been updated successfully.");
-
-    } catch (error) {
-
-        alert(
-            error?.message ||
-            "Unable to update your password."
-        );
-    }
-}
-
-async function initializeFixItAuth() {
-
-    try {
-
-        const { data } =
-            await fixitAuthClient.auth.getSession();
-
-        updateAccountUI(data?.session?.user || null);
-
-        fixitAuthClient.auth.onAuthStateChange(
-            (_event, session) => {
-                updateAccountUI(session?.user || null);
-            }
-        );
-
-        await handleRecoverySession();
-
-    } catch (error) {
-
-        console.error(
-            "FixIt authentication initialization error:",
-            error
-        );
-    }
-}
-
-
-/* =========================================================
-   LOCAL DIAGNOSIS HISTORY
-   History is keyed by the logged-in Supabase user ID.
-   This does NOT change the existing diagnosis API/database.
-========================================================= */
-
-function historyStorageKey() {
-
-    if (!fixitCurrentUser?.id) return null;
-
-    return "fixit_diagnosis_history_" + fixitCurrentUser.id;
-}
-
-function getDiagnosisHistory() {
-
-    const key = historyStorageKey();
-
-    if (!key) return [];
-
-    try {
-        const value = localStorage.getItem(key);
-        const parsed = value ? JSON.parse(value) : [];
-        return Array.isArray(parsed) ? parsed : [];
-    } catch (error) {
-        console.error("Unable to read FixIt history:", error);
-        return [];
-    }
-}
-
-function saveDiagnosisToHistory(diagnosis) {
-
-    const key = historyStorageKey();
-
-    if (!key || !diagnosis) return;
-
-    const history = getDiagnosisHistory();
-
-    const entry = {
-        id: Date.now().toString(),
-        createdAt: new Date().toISOString(),
-        device: DEVICE_NAMES[appState.device] || appState.device || "Device",
-        problem: appState.problem || "",
-        whenStarted: WHEN_NAMES[appState.whenStarted] || appState.whenStarted || "",
-        whatHappened: appState.whatHappened || "",
-        diagnosis: JSON.parse(JSON.stringify(diagnosis))
-    };
-
-    history.unshift(entry);
-
-    // Keep the most recent 50 diagnoses per account on this browser.
-    localStorage.setItem(key, JSON.stringify(history.slice(0, 50)));
-    renderDashboardHistory();
-}
-
-function formatHistoryDate(value) {
-
-    try {
-        return new Date(value).toLocaleString(undefined, {
-            dateStyle: "medium",
-            timeStyle: "short"
-        });
-    } catch (_) {
-        return "Unknown date";
-    }
-}
-
-function openDashboardHistory() {
-    if (!fixitCurrentUser) {
-        openAuthModal();
-        return;
-    }
-    openHistory();
-}
-
-function renderDashboardHistory() {
-    const subtitle = document.getElementById("dashboardHistorySubtitle");
-    const button = document.getElementById("dashboardHistoryButton");
-    if (!subtitle || !button) return;
-
-    if (!fixitCurrentUser) {
-        subtitle.textContent = "Sign in to access your saved diagnoses.";
-        button.textContent = "Sign In";
-        return;
-    }
-
-    subtitle.textContent = "Click View History to see your saved diagnoses.";
-    button.textContent = "View History";
-}
-
-function viewDashboardHistoryEntry(index) {
-    openHistory();
-    setTimeout(() => viewHistoryEntry(index), 0);
-}
-
-function openHistory() {
-
-    if (!fixitCurrentUser) {
-        closeModal("authModal");
-        openAuthModal();
-        return;
-    }
-
-    closeModal("authModal");
-
-    const modal = document.getElementById("historyModal");
-    const content = document.getElementById("historyContent");
-
-    if (!modal || !content) return;
-
-    renderHistory();
-    modal.classList.add("show");
-}
-
-function renderHistory() {
-
-    const content = document.getElementById("historyContent");
-
-    if (!content) return;
-
-    const history = getDiagnosisHistory();
-
-    if (!history.length) {
-        content.innerHTML = `
-            <div class="history-empty">
-                <div style="font-size:42px; margin-bottom:10px;">📋</div>
-                <strong>No diagnosis history yet.</strong>
-                <div>Run a diagnosis while signed in and it will appear here.</div>
-            </div>
-        `;
-        return;
-    }
-
-    content.innerHTML = `
-        <div class="history-list">
-            ${history.map((entry, index) => {
-                const diagnosis = entry.diagnosis || {};
-                const severity = normalizeSeverity(diagnosis.severity);
-
-                return `
-                    <div class="history-item">
-                        <div class="history-item-title">
-                            ${escapeHTML(diagnosis.title || "Troubleshooting Result")}
-                        </div>
-
-                        <div class="history-item-meta">
-                            ${escapeHTML(entry.device || "Device")} ·
-                            ${escapeHTML(formatHistoryDate(entry.createdAt))} ·
-                            ${escapeHTML(severity.toUpperCase())}
-                        </div>
-
-                        <div class="history-item-problem">
-                            <strong>Problem:</strong>
-                            ${escapeHTML(entry.problem || "No problem description")}
-                        </div>
-
-                        <div class="history-item-actions">
-                            <button
-                                class="btn btn-secondary"
-                                type="button"
-                                onclick="viewHistoryEntry(${index})"
-                            >
-                                View Diagnosis
-                            </button>
-
-                            <button
-                                class="history-delete"
-                                type="button"
-                                onclick="deleteHistoryEntry(${index})"
-                            >
-                                Delete
-                            </button>
-                        </div>
-                    </div>
-                `;
-            }).join("")}
-        </div>
-    `;
-}
-
-function viewHistoryEntry(index) {
-
-    const history = getDiagnosisHistory();
-    const entry = history[index];
-
-    if (!entry) return;
-
-    const diagnosis = entry.diagnosis || {};
-    const causes = normalizeCauses(diagnosis.causes);
-    const steps = Array.isArray(diagnosis.steps) ? diagnosis.steps : [];
-    const nextChecks = Array.isArray(diagnosis.nextChecks) ? diagnosis.nextChecks : [];
-
-    const content = document.getElementById("historyContent");
-    if (!content) return;
-
-    content.innerHTML = `
-        <button
-            class="btn btn-secondary"
-            type="button"
-            onclick="renderHistory()"
-            style="margin-bottom:16px;"
-        >
-            ← Back to History
-        </button>
-
-        <div class="history-detail">
-            <h3>${escapeHTML(diagnosis.title || "Troubleshooting Result")}</h3>
-
-            <p style="color:#64748b;">
-                ${escapeHTML(entry.device || "Device")} ·
-                ${escapeHTML(formatHistoryDate(entry.createdAt))}
-            </p>
-
-            <h4>Problem</h4>
-            <p>${escapeHTML(entry.problem || "No problem description")}</p>
-
-            ${entry.whenStarted ? `
-                <h4>When it started</h4>
-                <p>${escapeHTML(entry.whenStarted)}</p>
-            ` : ""}
-
-            ${entry.whatHappened ? `
-                <h4>What happened</h4>
-                <p>${escapeHTML(entry.whatHappened)}</p>
-            ` : ""}
-
-            <h4>Diagnosis</h4>
-            <p>${escapeHTML(diagnosis.description || "")}</p>
-
-            ${causes.length ? `
-                <h4>Likely causes</h4>
-                <ul>
-                    ${causes.map(cause => `
-                        <li>
-                            <strong>${escapeHTML(cause.title)}</strong>
-                            — ${escapeHTML(cause.description)}
-                        </li>
-                    `).join("")}
-                </ul>
-            ` : ""}
-
-            ${steps.length ? `
-                <h4>Recommended steps</h4>
-                <ul>
-                    ${steps.map(step => `<li>${escapeHTML(step)}</li>`).join("")}
-                </ul>
-            ` : ""}
-
-            ${nextChecks.length ? `
-                <h4>Next checks</h4>
-                <ul>
-                    ${nextChecks.map(item => `<li>${escapeHTML(item)}</li>`).join("")}
-                </ul>
-            ` : ""}
-
-            ${diagnosis.safety ? `
-                <h4>Safety</h4>
-                <p>${escapeHTML(diagnosis.safety)}</p>
-            ` : ""}
-        </div>
-    `;
-}
-
-function deleteHistoryEntry(index) {
-
-    const key = historyStorageKey();
-
-    if (!key) return;
-
-    const history = getDiagnosisHistory();
-
-    if (!history[index]) return;
-
-    if (!confirm("Delete this diagnosis from your FixIt history?")) {
-        return;
-    }
-
-    history.splice(index, 1);
-    localStorage.setItem(key, JSON.stringify(history));
-    renderHistory();
-}
-
-/* =========================================================
-   SUPABASE EDGE FUNCTION
-========================================================= */
-
-const SUPABASE_DIAGNOSE_URL =
-    "https://cnjykckejgtfrmckrjbs.supabase.co/functions/v1/diagnose";
-
-/*
- * This is the Supabase publishable key.
- * It is sent through the `apikey` header only.
- * NEVER put the service_role/secret key in this HTML.
- */
-const SUPABASE_ANON_KEY =
-    "sb_publishable_c4J9-DLvIUn_3tR8oN_EjA_c4FKo2iF";
+const APPSCRIPT_URL =
+    "https://script.google.com/macros/s/AKfycbyFngxXqFnjEXRrYBZGo-5IXEO6d7fU1Xa6wup3LX8zMX8BrsE0nfA03DALSMTPCoAczg/exec";
 
 
 /* =========================================================
@@ -4985,30 +3512,24 @@ function generateLocalDiagnosis() {
 
 
 /* =========================================================
-   SUPABASE SERVER DIAGNOSIS
-
-   IMAGE PROVIDER FLOW:
-   Groq -> creates search queries
-   Pexels -> real photos
-   OpenAI -> AI-generated instructional images when needed
-
-   The OpenAI secret stays in Supabase Edge Function Secrets
-   as OPENAI_KEY. It must NOT be placed in this HTML file.
+   SERVER DIAGNOSIS
 ========================================================= */
 
 async function requestServerDiagnosis() {
 
     const payload = {
 
+        action:
+            "diagnose",
+
+        timestamp:
+            new Date().toISOString(),
+
         device:
-            DEVICE_NAMES[appState.device] ||
+            DEVICE_NAMES[
+                appState.device
+            ] ||
             appState.device,
-
-        deviceKey:
-            appState.device,
-
-        powerState:
-            appState.powerState,
 
         powerStatus:
             appState.powerLabel,
@@ -5017,19 +3538,13 @@ async function requestServerDiagnosis() {
             appState.problem,
 
         whenStarted:
-            WHEN_NAMES[appState.whenStarted] ||
+            WHEN_NAMES[
+                appState.whenStarted
+            ] ||
             "",
 
         whatHappened:
-            appState.whatHappened,
-
-        // Image workflow is handled by the Supabase Edge Function.
-        // API keys are NEVER stored in this HTML.
-        imageOptions: {
-            enableGroq: true,
-            enablePexels: true,
-            enableOpenAI: true
-        }
+            appState.whatHappened
 
     };
 
@@ -5037,7 +3552,7 @@ async function requestServerDiagnosis() {
     const response =
         await fetch(
 
-            SUPABASE_DIAGNOSE_URL,
+            APPSCRIPT_URL,
 
             {
 
@@ -5047,15 +3562,14 @@ async function requestServerDiagnosis() {
                 headers: {
 
                     "Content-Type":
-                        "application/json",
-
-                    "apikey":
-                        SUPABASE_ANON_KEY
+                        "text/plain;charset=utf-8"
 
                 },
 
                 body:
-                    JSON.stringify(payload)
+                    JSON.stringify(
+                        payload
+                    )
 
             }
 
@@ -5064,37 +3578,49 @@ async function requestServerDiagnosis() {
 
     if (!response.ok) {
 
-        const errorText =
-            await response.text();
-
         throw new Error(
-            "Supabase API error " +
-            response.status +
-            ": " +
-            errorText
+            "API HTTP " +
+            response.status
         );
 
     }
 
 
-    const data =
-        await response.json();
+    const text =
+        await response.text();
 
 
-    if (
-        !data ||
-        !data.title ||
-        !Array.isArray(data.causes)
-    ) {
+    if (!text) {
 
         throw new Error(
-            "Supabase returned an invalid diagnosis."
+            "Empty API response"
         );
 
     }
 
 
-    return normalizeDiagnosis(data);
+    let data;
+
+
+    try {
+
+        data =
+            JSON.parse(text);
+
+    }
+
+    catch {
+
+        throw new Error(
+            "API did not return JSON"
+        );
+
+    }
+
+
+    return extractDiagnosis(
+        data
+    );
 
 }
 
@@ -5211,47 +3737,7 @@ function normalizeDiagnosis(
 
         safety:
             data.safety ||
-            "",
-
-        category:
-            data.category ||
-            "",
-
-        imageQueries:
-            Array.isArray(data.imageQueries)
-                ? data.imageQueries
-                : [],
-
-        solutionImages:
-            Array.isArray(data.solutionImages)
-                ? data.solutionImages
-                : [],
-
-        generatedImages:
-            Array.isArray(data.generatedImages)
-                ? data.generatedImages.map((item) => ({
-                    ...item,
-                    imageUrl:
-                        item?.imageUrl ||
-                        item?.url ||
-                        item?.image_url ||
-                        (item?.b64_json
-                            ? `data:image/png;base64,${item.b64_json}`
-                            : "")
-                })).filter(item => item.imageUrl)
-                : (data.generatedImage
-                    ? [{
-                        step: data.generatedImage.step || "",
-                        imageUrl:
-                            data.generatedImage.imageUrl ||
-                            data.generatedImage.url ||
-                            data.generatedImage.image_url ||
-                            (data.generatedImage.b64_json
-                                ? `data:image/png;base64,${data.generatedImage.b64_json}`
-                                : ""),
-                        alt: data.generatedImage.alt || "AI-generated instructional image"
-                    }].filter(item => item.imageUrl)
-                    : [])
+            ""
 
     };
 
@@ -5773,75 +4259,6 @@ function escapeHTML(
 
 
 /* =========================================================
-   REAL SOLUTION PHOTO HELPERS
-   Photos come from the Supabase Edge Function -> Pexels.
-   No Pexels API key is stored in this HTML.
-========================================================= */
-
-function getSolutionImageForStep(diagnosis, step, index) {
-    const images = Array.isArray(diagnosis?.solutionImages)
-        ? diagnosis.solutionImages.filter(item => item && item.imageUrl)
-        : [];
-
-    const normalized = String(step || "").trim().toLowerCase();
-    const exact = images.find(
-        item => String(item?.step || "").trim().toLowerCase() === normalized
-    );
-
-    return exact || images[index] || null;
-}
-
-function getGeneratedImageForStep(diagnosis, step, index) {
-    const images = Array.isArray(diagnosis?.generatedImages)
-        ? diagnosis.generatedImages.filter(item => item && item.imageUrl)
-        : [];
-    const normalized = String(step || "").trim().toLowerCase();
-    const exact = images.find(
-        item => String(item?.step || "").trim().toLowerCase() === normalized
-    );
-    return exact || images[index] || null;
-}
-
-function encodeForAttribute(value) {
-    return encodeURIComponent(String(value ?? ""));
-}
-
-function openSolutionImage(src, caption, photographer, pexelsUrl) {
-    const modal = document.getElementById("solutionImageModal");
-    const image = document.getElementById("solutionImageModalImg");
-    const text = document.getElementById("solutionImageModalCaption");
-    if (!modal || !image) return;
-
-    image.src = src;
-    image.alt = caption || "Solution image";
-
-    if (text) {
-        text.innerHTML = escapeHTML(caption || "Solution");
-        if (photographer) {
-            text.innerHTML += ` · Photo by ${escapeHTML(photographer)}`;
-        }
-        if (pexelsUrl) {
-            text.innerHTML += ` · <a href="${escapeHTML(pexelsUrl)}" target="_blank" rel="noopener noreferrer">View on Pexels</a>`;
-        }
-    }
-
-    modal.classList.add("open");
-    document.body.style.overflow = "hidden";
-}
-
-function closeSolutionImage(event) {
-    if (event && event.target && event.target.id !== "solutionImageModal") return;
-    const modal = document.getElementById("solutionImageModal");
-    if (!modal) return;
-    modal.classList.remove("open");
-    document.body.style.overflow = "";
-}
-
-document.addEventListener("keydown", function(event) {
-    if (event.key === "Escape") closeSolutionImage();
-});
-
-/* =========================================================
    RENDER DIAGNOSIS
 ========================================================= */
 
@@ -5956,63 +4373,19 @@ function renderDiagnosis(
 
         steps
             .map(
-                (step, index) => {
-                    const realImage = getSolutionImageForStep(diagnosis, step, index);
-                    const generatedImage = getGeneratedImageForStep(diagnosis, step, index);
-                    const image = realImage || generatedImage;
-                    const imageSrc = image?.imageUrl || "";
-                    const imageAlt = image?.alt || `${realImage ? "Real photo" : "AI-generated instructional image"} for: ${step}`;
-                    const photographer = realImage?.photographer || "";
-                    const photographerUrl = realImage?.photographerUrl || "";
-                    const pexelsUrl = realImage?.pexelsUrl || "";
-                    const isImage = Boolean(image?.imageUrl);
-                    const isGenerated = !realImage && Boolean(generatedImage?.imageUrl);
-                    const caption = step;
+                step => `
 
-                    const clickArgs = [
-                        imageSrc,
-                        caption,
-                        photographer,
-                        pexelsUrl
-                    ].map(encodeForAttribute);
+                    <li>
 
-                    const visualHTML = isImage
-                        ? `
-                            <div
-                                class="solution-visual real-solution-photo"
-                                role="button"
-                                tabindex="0"
-                                aria-label="View solution image for step ${index + 1}"
-                                onclick="openSolutionImage(decodeURIComponent('${clickArgs[0]}'), decodeURIComponent('${clickArgs[1]}'), decodeURIComponent('${clickArgs[2]}'), decodeURIComponent('${clickArgs[3]}'))"
-                                onkeydown="if(event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openSolutionImage(decodeURIComponent('${clickArgs[0]}'), decodeURIComponent('${clickArgs[1]}'), decodeURIComponent('${clickArgs[2]}'), decodeURIComponent('${clickArgs[3]}')); }"
-                            >
-                                <img class="solution-image" src="${escapeHTML(imageSrc)}" alt="${escapeHTML(imageAlt)}" loading="lazy"
-                                    onerror="this.closest('.solution-visual').outerHTML='<div class=\"solution-visual solution-no-photo\"><span>📷 Image unavailable</span></div>'">
-                                <span class="solution-image-hint">${isGenerated ? "AI-generated guide · Tap to enlarge" : "Real photo · Tap to enlarge"}</span>
-                            </div>`
-                        : `
-                            <div class="solution-visual solution-no-photo">
-                                <span>📷 Image unavailable</span>
-                            </div>`;
-
-                    return `
-
-                    <li class="solution-step">
-
-                        ${visualHTML}
-
-                        <div class="solution-step-text">
-                            <div class="solution-step-number">Step ${index + 1}</div>
-                            <div class="solution-step-title">${escapeHTML(step)}</div>
-                            <div>${escapeHTML(step)}</div>
-                            ${photographer ? `<div class="solution-photo-credit">Photo by ${escapeHTML(photographer)}${photographerUrl ? ` · <a href="${escapeHTML(photographerUrl)}" target="_blank" rel="noopener noreferrer">Photographer</a>` : ""}${pexelsUrl ? ` · <a href="${escapeHTML(pexelsUrl)}" target="_blank" rel="noopener noreferrer">Pexels</a>` : ""}</div>` : (isGenerated ? `<div class="solution-photo-credit">AI-generated instructional image</div>` : "")}
-                            <div class="solution-helper">👀 Look at the picture, then follow the step.</div>
-                        </div>
+                        ${
+                            escapeHTML(
+                                step
+                            )
+                        }
 
                     </li>
 
-                `;
-                }
+                `
             )
             .join("");
 
@@ -6150,7 +4523,7 @@ function renderDiagnosis(
             </h3>
 
 
-            <ol class="steps-list" style="list-style:none; padding:0; margin:0;">
+            <ol class="steps-list">
 
                 ${stepsHTML}
 
@@ -6487,121 +4860,185 @@ async function startDiagnosis() {
         true;
 
 
+    let diagnosis =
+        null;
+
+
+    /*
+     * TRY APPS SCRIPT FIRST
+     */
+
     try {
 
-        const diagnosis =
+        diagnosis =
             await requestServerDiagnosis();
-
-
-        if (
-            !isValidDiagnosis(diagnosis)
-        ) {
-
-            throw new Error(
-                "Supabase returned an incomplete diagnosis."
-            );
-
-        }
-
-
-        diagnosis.causes =
-            normalizeCauses(
-                diagnosis.causes
-            );
-
-
-        appState.diagnosis =
-            diagnosis;
-
-
-        renderDiagnosis(
-            diagnosis
-        );
-
-        // Save a local history copy only when a user is signed in.
-        // The existing Supabase diagnosis request remains unchanged.
-        if (fixitCurrentUser) {
-            saveDiagnosisToHistory(diagnosis);
-        }
 
     }
 
     catch (error) {
 
-        console.error(
-            "Supabase diagnosis failed:",
+        console.warn(
+            "Server diagnosis unavailable:",
             error
         );
 
-        content.innerHTML = `
+    }
 
-            <div
-                style="
-                    text-align:center;
-                    padding:60px 20px;
-                "
-            >
 
-                <div
-                    style="
-                        font-size:48px;
-                        margin-bottom:16px;
-                    "
-                >
-                    ⚠️
-                </div>
+    /*
+     * LOCAL FALLBACK
+     */
 
-                <h3
-                    style="
-                        font-size:24px;
-                        margin-bottom:10px;
-                    "
-                >
-                    Unable to analyze the problem
-                </h3>
+    if (
+        !isValidDiagnosis(
+            diagnosis
+        )
+    ) {
 
-                <p
-                    style="
-                        color:#64748b;
-                        max-width:600px;
-                        margin:0 auto 22px;
-                        line-height:1.6;
-                    "
-                >
-                    FixIt could not connect to the diagnosis
-                    server. Please check your internet connection
-                    and try again.
-                </p>
-
-                <button
-                    class="btn btn-primary"
-                    onclick="startDiagnosis()"
-                >
-                    Try Again
-                </button>
-
-            </div>
-
-        `;
+        diagnosis =
+            generateLocalDiagnosis();
 
     }
 
-    finally {
 
-        button.disabled =
-            false;
+    /*
+     * GUARANTEE 3-5 CAUSES
+     */
 
-    }
+    diagnosis.causes =
+        normalizeCauses(
+            diagnosis.causes
+        );
+
+
+    appState.diagnosis =
+        diagnosis;
+
+
+    renderDiagnosis(
+        diagnosis
+    );
+
+
+    /*
+     * SAVE RESULT
+     */
+
+    saveDiagnosis(
+        diagnosis
+    );
+
+
+    button.disabled =
+        false;
 
 }
 
 
 /* =========================================================
-   DATABASE SAVING
-=========================================================
-   The Supabase Edge Function saves every successful diagnosis
-   directly into public.diagnosis_requests.
+   SAVE TO GOOGLE SHEETS
 ========================================================= */
+
+function saveDiagnosis(
+    diagnosis
+) {
+
+    const data = {
+
+        action:
+            "save",
+
+        timestamp:
+            new Date().toISOString(),
+
+        device:
+            DEVICE_NAMES[
+                appState.device
+            ] ||
+            appState.device,
+
+        powerStatus:
+            appState.powerLabel,
+
+        problem:
+            appState.problem,
+
+        whenStarted:
+            WHEN_NAMES[
+                appState.whenStarted
+            ] ||
+            "",
+
+        whatHappened:
+            appState.whatHappened,
+
+        diagnosis:
+            diagnosis.title,
+
+        severity:
+            diagnosis.severity,
+
+        causes:
+            diagnosis.causes
+                .map(
+                    cause =>
+                        cause.title +
+                        ": " +
+                        cause.description
+                )
+                .join(
+                    " | "
+                ),
+
+        recommendedSteps:
+            (
+                diagnosis.steps ||
+                []
+            )
+            .join(
+                " | "
+            )
+
+    };
+
+
+    fetch(
+
+        APPSCRIPT_URL,
+
+        {
+
+            method:
+                "POST",
+
+            headers: {
+
+                "Content-Type":
+                    "text/plain;charset=utf-8"
+
+            },
+
+            body:
+                JSON.stringify(
+                    data
+                )
+
+        }
+
+    )
+    .catch(
+        error => {
+
+            console.warn(
+                "Save failed:",
+                error
+            );
+
+        }
+    );
+
+}
+
 
 /* =========================================================
    PRINT
@@ -6752,23 +5189,11 @@ document.addEventListener(
 
         updateProgress(1);
 
-        initializeFixItAuth();
-
     }
 );
 
 </script>
 
-
-
-<!-- Visual solution image viewer -->
-<div class="solution-image-modal" id="solutionImageModal" onclick="closeSolutionImage(event)">
-    <div class="solution-image-modal-content" onclick="event.stopPropagation()">
-        <button class="solution-image-modal-close" type="button" onclick="closeSolutionImage()">✕ Close</button>
-        <img id="solutionImageModalImg" src="" alt="Solution image">
-        <div class="solution-image-modal-caption" id="solutionImageModalCaption"></div>
-    </div>
-</div>
 
 </body>
 
